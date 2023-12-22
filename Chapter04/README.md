@@ -56,6 +56,10 @@ Forwarding from [::1]:8080 -> 80
 $ kubectl exec -it nginx-pod -- bash
 root@nginx-pod:/# hostname 
 nginx-pod
+
+# exit from container shell
+root@nginx-pod:/# exit 
+exit 
 ```
 
 ## Delete pod
@@ -64,4 +68,7 @@ nginx-pod
 $ kubectl delete pods nginx-pod 
 # or... 
 $ kubectl delete pods/nginx-pod 
+
+# or
+$ kubectl delete -f nginx-pod.yaml 
 ```
