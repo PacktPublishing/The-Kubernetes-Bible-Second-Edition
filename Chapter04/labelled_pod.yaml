@@ -1,0 +1,12 @@
+# labelled_pod.yaml 
+apiVersion: v1 
+kind: Pod 
+metadata: 
+  name: nginx-pod 
+  labels: 
+    environment: prod 
+    tier: frontend 
+spec: 
+  containers: 
+    - name: nginx-container
+      image: nginx:latest
