@@ -1,4 +1,4 @@
-# ~/labelled_pod.yaml 
+# labelled_pod.yaml 
 apiVersion: v1 
 kind: Pod 
 metadata: 

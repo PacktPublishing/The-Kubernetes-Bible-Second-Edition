@@ -1,0 +1,17 @@
+# hello-world-job-2.yaml 
+apiVersion: batch/v1 
+kind: Job 
+metadata: 
+  name: hello-world-job 
+spec: 
+  backoffLimit: 3
+  template: 
+    metadata: 
+      name: hello-world-job-2
+    spec: 
+      restartPolicy: OnFailure 
+      containers: 
+      - name: hello-world-container 
+        image: busybox 
+        command: ["/bin/sh", "-c"] 
+        args: ["echo 'Hello world'"]

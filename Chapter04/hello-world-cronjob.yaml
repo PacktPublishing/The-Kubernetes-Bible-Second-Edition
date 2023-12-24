@@ -1,0 +1,23 @@
+# hello-world-cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello-world-cronjob
+spec:
+  schedule: "*/1 * * * *"  
+  # Run every minute
+  successfulJobsHistoryLimit: 5
+  startingDeadlineSeconds: 30
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: hello-world-cronjob
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: hello-world-container
+            image: busybox
+            imagePullPolicy: IfNotPresent
+            command: ["/bin/sh", "-c"]
+            args: ["echo 'Hello world'"]
