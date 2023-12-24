@@ -72,3 +72,9 @@ $ kubectl delete pods/nginx-pod
 # or
 $ kubectl delete -f nginx-pod.yaml 
 ```
+
+## Labelling
+
+```shell
+$ kubectl run nginx-pod --image nginx --label "tier=frontend" 
+```
