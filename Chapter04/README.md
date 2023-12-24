@@ -8,6 +8,7 @@ NAME        READY   STATUS    RESTARTS   AGE
 nginx-pod   1/1     Running   0          3m13s
 ```
 
+
 ```shell
 $ kubectl create -f nginx-pod.yaml  
 pod/nginx-pod created 
