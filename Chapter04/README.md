@@ -76,5 +76,17 @@ $ kubectl delete -f nginx-pod.yaml
 ## Labelling
 
 ```shell
-$ kubectl run nginx-pod --image nginx --label "tier=frontend" 
+$ kubectl run nginx-pod --image nginx --labels "tier=frontend" 
+```
+
+```shell
+$ kubectl get pod -l environment=prod
+NAME        READY   STATUS    RESTARTS   AGE
+nginx-pod   1/1     Running   0          31m
+```
+
+```shell
+$ kubectl get pods --show-labels
+NAME        READY   STATUS    RESTARTS   AGE   LABELS
+nginx-pod   1/1     Running   0          56s   environment=prod,tier=frontend
 ```
