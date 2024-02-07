@@ -1,0 +1,14 @@
+# failed-multi-container-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: failed-multi-container-pod
+spec:
+  restartPolicy: Never
+  containers:
+    - name: nginx-container
+      image: nginx:i-do-not-exist
+    - name: debian-container
+      image: debian
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do date;echo debian-container; sleep 5 ; done"]

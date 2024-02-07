@@ -1,0 +1,14 @@
+# nginx-debian-with-custom-command-and-args
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-debian-with-custom-command-and-args
+spec:
+  restartPolicy: Never
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+    - name: debian-container
+      image: debian
+      command: ["sleep"] # Corresponds to the ENTRYPOINT
+      args: ["60"] # Corresponds to CMD
