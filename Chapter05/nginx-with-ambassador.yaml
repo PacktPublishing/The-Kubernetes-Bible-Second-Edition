@@ -1,0 +1,16 @@
+# nginx-with-ambassador.yaml 
+apiVersion: v1 
+kind: Pod 
+metadata: 
+  name: nginx-with-ambassador 
+spec: 
+  containers:
+    - name: mysql-proxy-ambassador-container
+      image: mysql-proxy:latest
+      ports:
+        - containerPort: 3306
+      env:
+      - name: DB_HOST
+        value: mysql.xxx.us-east-1.rds.amazonaws.com
+    - name: nginx-container
+      image: nginx:latest
