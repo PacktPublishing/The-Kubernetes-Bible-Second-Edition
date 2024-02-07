@@ -223,3 +223,46 @@ Defaulted container "nginx-container" out of: nginx-container, debian-container
 2024/02/04 16:35:55 [notice] 1#1: start worker process 39
 2024/02/04 16:35:55 [notice] 1#1: start worker process 40
 ```
+
+## Volumes
+
+```shell
+$ kubectl create -f multi-container-with-emptydir-pod.yaml 
+pod/multi-container-with-emptydir-pod created
+
+$ kubectl get po
+NAME                                READY   STATUS    RESTARTS   AGE
+multi-container-with-emptydir-pod   2/2     Running   0          25s
+```
+
+```shell
+$  kubectl exec multi-container-with-emptydir-pod -c debian-container -- ls /var
+backups
+cache
+i-am-empty-dir-volume
+lib
+local
+lock
+log
+mail
+opt
+run
+spool
+tmp
+```
+
+```shell
+$  kubectl exec multi-container-with-emptydir-pod -c debian-container -- bin/sh -c "echo 'hello world' >> /var/i-am-empty-dir-volume/hello-world.txt" 
+
+$ kubectl exec multi-container-with-emptydir-pod -c nginx-container -- cat /var/i-am-empty-dir-volume/hello-world.txt
+hello world
+
+$ kubectl exec multi-container-with-emptydir-pod -c debian-container -- cat /var/i-am-empty-dir-volume/hello-world.txt
+hello world
+```
+
+Hostpath Volume
+
+```shell
+$ echo "Hello World" >> /tmp/hello-world.txt 
+```

@@ -1,0 +1,23 @@
+# multi-container-with-emptydir-pod.yaml
+---
+apiVersion: v1 
+kind: Pod 
+metadata: 
+  name: multi-container-with-emptydir-pod
+spec: 
+  containers: 
+    - name: nginx-container 
+      image: nginx:latest 
+      volumeMounts: 
+      - mountPath: /var/i-am-empty-dir-volume 
+        name: empty-dir-volume 
+    - name: debian-container
+      image: debian
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do sleep 30; done;"] # Prevents container from exiting after completion
+      volumeMounts: 
+      - mountPath: /var/i-am-empty-dir-volume 
+        name: empty-dir-volume 
+  volumes: 
+  - name: empty-dir-volume # name of the volume 
+    emptyDir: {} # Initialize an empty directory # The path on the worker node. 
