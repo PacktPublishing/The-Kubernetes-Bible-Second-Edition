@@ -242,7 +242,7 @@ password.txt:  10 bytes
 ```shell
 $ kubectl apply -f flask-pod-with-secret.yaml
 
-$  kubectl exec pods/flask-pod-with-secret -- env 
+$ kubectl exec pods/flask-pod-with-secret -- env 
 PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 HOSTNAME=flask-pod-with-secret
 PASSWORD_ENV_VAR=my-db-password
