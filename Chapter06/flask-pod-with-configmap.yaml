@@ -1,0 +1,17 @@
+# flask-pod-with-configmap.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flask-pod-with-configmap
+  labels:
+    app: my-flask-app
+spec:
+  containers:
+    - name: flask-with-configmap
+      image: quay.io/iamgini/my-flask-app:1.0
+      env:
+        - name: COLOR # Any other name works here.
+          valueFrom:
+            configMapKeyRef:
+              name: my-third-configmap
+              key: color

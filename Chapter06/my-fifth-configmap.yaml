@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-fifth-configmap
+data:
+  color: "blue"
+  version: "1"
+  environment: "prod"

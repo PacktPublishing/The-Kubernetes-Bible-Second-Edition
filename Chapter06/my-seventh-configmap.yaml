@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-seventh-configmap
+data:
+  color: "green"
+  configfile.txt: |
+    I'm another configuration file.

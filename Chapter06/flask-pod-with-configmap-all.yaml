@@ -1,0 +1,12 @@
+# flask-pod-with-configmap-all.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flask-pod-with-configmap-all
+spec:
+  containers:
+    - name: flask-with-configmap
+      image: quay.io/iamgini/my-flask-app:1.0
+      envFrom:
+        - configMapRef:
+            name: my-fourth-configmap
