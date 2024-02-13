@@ -1,8 +1,8 @@
-# flask-pod-2-with-configmap.yaml
+# flask-pod-with-configmap-all.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: flask-pod-2-with-configmap
+  name: flask-pod-with-configmap-all
 spec:
   containers:
     - name: flask-with-configmap

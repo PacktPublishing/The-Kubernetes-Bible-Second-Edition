@@ -3,6 +3,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: flask-pod-with-configmap
+  labels:
+    app: my-flask-app
 spec:
   containers:
     - name: flask-with-configmap

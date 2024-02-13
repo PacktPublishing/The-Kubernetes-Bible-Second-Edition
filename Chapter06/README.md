@@ -127,10 +127,19 @@ HOME=/root
 ```
 
 ```shell
-$ kubectl create -f flask-pod-2-with-configmap.yaml 
+# Expose the pod
+$ kubectl expose pod flask-pod-with-configmap --port=8081 --target-port=5000 --type=NodePort
+
+# Find the external port for minikube
+$ minikube service --url flask-pod-with-configmap
+http://192.168.49.2:31997
+```
+
+```shell
+$ kubectl create -f flask-pod-with-configmap-all.yaml
 pod/flask-pod-2-with-configmap created
 
-$ kubectl exec pods/flask-pod-2-with-configmap -- env
+$ kubectl exec pods/flask-pod-with-configmap-all -- env
 PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 HOSTNAME=flask-pod-2-with-configmap
 environment=prod
@@ -153,6 +162,30 @@ PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/dbf0c85f76fb6e1ab42aa672f
 PYTHON_GET_PIP_SHA256=dfe9fd5c28dc98b5ac17979a953ea550cec37ae1b47a5116007395bfacff2ab9
 HOME=/root
 ```
+
+```shell
+$ kubectl apply -f flask-pod-with-configmap-volume.yaml
+pod/flask-pod-with-configmap-volume created
+
+$ kubectl exec pods/flask-pod-with-configmap-volume -- ls /etc/conf
+color
+configfile.txt
+
+$ kubectl exec pods/flask-pod-with-configmap-volume -- cat /etc/conf/color
+yellow
+
+$ kubectl exec pods/flask-pod-with-configmap-volume -- cat /etc/conf/configfile.txt
+I'm just a dummy config file
+```
+
+Delete ConfigMap
+
+```shell
+$ kubectl delete cm my-first-configmap 
+configmap "my-first-configmap" deleted 
+```
+
+## Secrets
 
 
 ## Appendix
