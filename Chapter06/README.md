@@ -271,6 +271,11 @@ PYTHON_GET_PIP_SHA256=dfe9fd5c28dc98b5ac17979a953ea550cec37ae1b47a5116007395bfac
 HOME=/root
 ```
 
+```shell
+
+$ kubectl exec pods/flask-pod-with-secret-volume --  cat /etc/password-mounted-path/db_password 
+my-db-password 
+```
 
 ## Appendix
 
