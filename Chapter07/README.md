@@ -97,11 +97,52 @@ Address:        10.96.0.10#53
 
 Name:   nginx.default.svc.cluster.local
 Address: 10.106.124.200
-
-
 ```
 
+## NodePort Service
 
+```shell
+$ kubectl run whoami1 --image=containous/whoami --port 80 --labels="app=whoami"
+pod/whoami1 created
+$ kubectl run whoami2 --image=containous/whoami --port 80 --labels="app=whoami"
+pod/whoami2 created
+
+$ kubectl get pods --show-labels 
+NAME      READY   STATUS    RESTARTS   AGE    LABELS
+whoami1   1/1     Running   0          3m5s   app=whoami
+whoami2   1/1     Running   0          3m     app=whoami
+```
+
+```shell
+$ kubectl create -f nodeport-whoami.yaml 
+service/nodeport-whoami created
+
+$ kubectl get service nodeport-whoami 
+NAME              TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nodeport-whoami   NodePort   10.98.160.98   <none>        80:30001/TCP   14s
+
+$ minikube service --url nodeport-whoami
+http://192.168.49.2:30001
+
+$ kubectl describe service nodeport-whoami 
+Name:                     nodeport-whoami
+Namespace:                default
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=whoami
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.98.160.98
+IPs:                      10.98.160.98
+Port:                     <unset>  80/TCP
+TargetPort:               80/TCP
+NodePort:                 <unset>  30001/TCP
+Endpoints:                10.244.0.16:80,10.244.0.17:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+```
 
 ## Appendix
 

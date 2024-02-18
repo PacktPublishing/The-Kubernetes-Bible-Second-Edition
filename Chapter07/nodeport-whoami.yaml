@@ -1,0 +1,13 @@
+# ~/nodeport-whoami.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport-whoami
+spec:
+  type: NodePort
+  selector:
+    app: whoami
+  ports:
+  - nodePort: 30001
+    port: 80
+    targetPort: 80
