@@ -49,6 +49,7 @@ Endpoints:         10.244.0.115:80
 Session Affinity:  None
 Events:            <none>
 
+# if you want to test it with NodePort in minikube
 $ kubectl expose pod nginx --port=80 --type=NodePort
 service/nginx exposed
 
@@ -83,6 +84,32 @@ Commercial support is available at
 
 
 ```shell
-$ kubectl apply -f https://k8s.io/examples/admin/dns/dnsutils.yaml
-pod/dnsutils created
+$ kubectl apply -f k8sutils.yaml
+pod/k8sutils created
+
+$ kubectl get po k8sutils 
+NAME       READY   STATUS    RESTARTS   AGE
+k8sutils   1/1     Running   0          13m
+
+$ kubectl exec -it k8sutils -- nslookup nginx.default.svc.cluster.local
+Server:         10.96.0.10
+Address:        10.96.0.10#53
+
+Name:   nginx.default.svc.cluster.local
+Address: 10.106.124.200
+
+
+```
+
+
+
+## Appendix
+
+### Building container image
+
+```shell
+$ podman build -t k8sutils:debian12 .
+$ podman tag localhost/k8sutils:debian12 quay.io/iamgini/k8sutils:debian12 
+$ podman login quay.io
+$ podman push quay.io/iamgini/k8sutils:debian12
 ```

@@ -1,4 +1,4 @@
-# ~/new-nginx-pod.yaml
+# new-nginx-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
