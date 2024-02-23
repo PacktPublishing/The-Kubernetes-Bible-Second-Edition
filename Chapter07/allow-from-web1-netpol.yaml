@@ -1,0 +1,23 @@
+# allow-from-web1-netpol.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-web1-netpol
+  namespace: web2
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx2
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              project: web1
+        - podSelector:
+            matchLabels:
+              app: nginx1
+      ports:
+        - protocol: TCP
+          port: 80

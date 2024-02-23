@@ -1,0 +1,21 @@
+# web1-app.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    project: web1
+  name: web1
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx1
+  namespace: web1
+  labels:
+    app: nginx1
+spec:
+  containers:
+    - name: nginx1
+      image: nginx

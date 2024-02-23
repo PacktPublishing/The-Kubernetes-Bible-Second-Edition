@@ -1,0 +1,14 @@
+# clusterip-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-clusterip-headless
+spec:
+  clusterIP: None
+  type: ClusterIP # Indicates that the service is a ClusterIP
+  ports:
+    - port: 80 # The port exposed by the service
+      protocol: TCP
+      targetPort: 80 # The destination port on the pods
+  selector:
+    run: nginx-clusterip

@@ -1,0 +1,21 @@
+# web2-app.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    project: web2
+  name: web2
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx2
+  namespace: web2
+  labels:
+    app: nginx2
+spec:
+  containers:
+    - name: nginx2
+      image: nginx
