@@ -1,0 +1,11 @@
+# new-nginx-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: new-nginx-pod
+spec:
+  containers:
+    - image: nginx:latest
+      name: new-nginx-container
+      ports:
+      - containerPort: 80

@@ -1,0 +1,9 @@
+# externalname-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-db
+  namespace: prod
+spec:
+  type: ExternalName
+  externalName: app-db.database.example.com

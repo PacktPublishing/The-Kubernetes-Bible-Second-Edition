@@ -1,0 +1,19 @@
+# nginx-pod-with-liveness-http-named-port.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-with-liveness-http-named-port
+spec:
+  containers:
+    - name: nginx-pod-with-liveness-http-named-port
+      image: nginx
+      ports:
+        - name: liveness-port
+          containerPort: 8080
+          hostPort: 8080
+      livenessProbe:
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        httpGet:
+          path: /healthcheck
+          port: liveness-port

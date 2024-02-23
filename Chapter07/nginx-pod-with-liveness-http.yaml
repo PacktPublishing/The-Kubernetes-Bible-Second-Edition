@@ -1,0 +1,18 @@
+# nginx-pod-with-liveness-http.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-with-liveness-http
+spec:
+  containers:
+    - name: nginx-pod-with-liveness-http
+      image: nginx
+      livenessProbe:
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        httpGet:
+          path: /healthcheck
+          port: 80
+          httpHeaders:
+            - name: My-Custom-Header
+              value: My-Custom-Header-Value

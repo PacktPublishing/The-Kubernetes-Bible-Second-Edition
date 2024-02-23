@@ -1,0 +1,25 @@
+# nginx-pod-with-startupprobe.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-with-startupprobe
+spec:
+  containers:
+    - name: nginx-pod-with-startupprobe
+      image: nginx
+      ports:
+        - name: liveness-port
+          containerPort: 8080
+          hostPort: 8080
+      livenessProbe:
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        httpGet:
+          path: /healthcheck
+          port: liveness-port
+      startupProbe:
+        httpGet:
+          path: /healthz
+          port: liveness-port
+        failureThreshold: 30
+        periodSeconds: 10

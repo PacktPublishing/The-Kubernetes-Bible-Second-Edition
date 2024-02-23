@@ -1,0 +1,14 @@
+# nginx-pod-with-liveness-tcp.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-with-liveness-tcp
+spec:
+  containers:
+    - name: nginx-pod-with-liveness-tcp
+      image: nginx
+      livenessProbe:
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        tcpSocket:
+          port: 80
