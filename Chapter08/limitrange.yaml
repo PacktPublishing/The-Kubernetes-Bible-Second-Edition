@@ -1,0 +1,21 @@
+# limitrange.yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: my-limitrange
+  namespace: custom-ns
+spec:
+  limits:
+    - default: # this section defines default limits
+        cpu: 500m
+        memory: 256Mi
+      defaultRequest: # this section defines default requests
+        cpu: 500m
+        memory: 128Mi
+      max: # max and min define the limit range
+        cpu: "1"
+        memory: 1000Mi
+      min:
+        cpu: 100m
+        memory: 128Mi
+      type: Container

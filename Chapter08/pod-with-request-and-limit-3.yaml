@@ -1,0 +1,17 @@
+# pod-with-request-and-limit-3.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-request-and-limit-3
+  namespace: custom-ns
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      resources:
+        requests:
+          memory: "3Gi"
+          cpu: "100m"
+        limits:
+          memory: "4Gi"
+          cpu: "500m"

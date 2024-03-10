@@ -1,0 +1,17 @@
+# pod-in-namespace-with-request-and-limit.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-request-and-limit
+  namespace: custom-ns
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
+        limits:
+          memory: "1Gi"
+          cpu: "1000m"

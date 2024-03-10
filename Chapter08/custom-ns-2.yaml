@@ -1,0 +1,5 @@
+# custom-ns-2.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: custom-ns-2

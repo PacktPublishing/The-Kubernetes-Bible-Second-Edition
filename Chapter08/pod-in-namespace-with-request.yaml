@@ -1,0 +1,14 @@
+# pod-in-namespace-with-request.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-request
+  namespace: custom-ns
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
