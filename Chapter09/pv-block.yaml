@@ -1,0 +1,16 @@
+# pv-block.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-block
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  persistentVolumeReclaimPolicy: Retain
+  fc:
+    targetWWNs: ["50060e801049cfd1"]
+    lun: 0
+    readOnly: false
