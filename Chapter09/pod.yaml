@@ -1,0 +1,16 @@
+# pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+    - image: nginx
+      name: nginx
+      volumeMounts:
+        - mountPath: "/var/www/html"
+          name: mypersistentvolume
+  volumes:
+    - name: mypersistentvolume
+      persistentVolumeClaim:
+        claimName: my-hostpath-pvc

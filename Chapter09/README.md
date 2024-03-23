@@ -35,3 +35,33 @@ Source:
     HostPathType:
 Events:            <none>
 ```
+
+
+```shell
+$ kubectl create -f pv.yaml
+persistentvolume/my-hostpath-pv created
+$ kubectl get pv
+NAME             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+my-hostpath-pv   1Gi        RWO            Retain           Available           slow           <unset>                          3s
+```
+
+```shell
+$ kubectl create -f pvc.yaml
+persistentvolumeclaim/my-hostpath-pvc created
+
+$ kubectl get pv,pvc
+NAME                              CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                     STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+persistentvolume/my-hostpath-pv   1Gi        RWO            Retain           Bound    default/my-hostpath-pvc   slow           <unset>                          17s
+
+NAME                                    STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/my-hostpath-pvc   Bound    my-hostpath-pv   1Gi        RWO            slow           <unset>                 2s
+```
+
+```shell
+$ kubectl create -f pod.yaml
+pod/nginx created
+
+$ kubectl get po
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          10s
+```
