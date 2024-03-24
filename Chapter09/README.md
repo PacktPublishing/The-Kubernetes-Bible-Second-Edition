@@ -61,7 +61,19 @@ persistentvolumeclaim/my-hostpath-pvc   Bound    my-hostpath-pv   1Gi        RWO
 $ kubectl create -f pod.yaml
 pod/nginx created
 
-$ kubectl get po
-NAME    READY   STATUS    RESTARTS   AGE
-nginx   1/1     Running   0          10s
+$ kubectl get pod,pv,pvc
+NAME        READY   STATUS    RESTARTS   AGE
+pod/nginx   1/1     Running   0          6s
+
+NAME                              CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                     STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+persistentvolume/my-hostpath-pv   1Gi        RWO            Retain           Bound    default/my-hostpath-pvc   slow           <unset>                          61m
+
+NAME                                    STATUS   VOLUME           CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/my-hostpath-pvc   Bound    my-hostpath-pv   1Gi        RWO            slow           <unset>                 61m
+```
+
+```shell
+$ kubectl api-resources --namespaced=false |grep -i volume
+persistentvolumes                 pv           v1                                false        PersistentVolume
+volumeattachments                              storage.k8s.io/v1                 false        VolumeAttachment
 ```
