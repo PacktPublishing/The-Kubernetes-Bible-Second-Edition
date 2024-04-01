@@ -1,0 +1,16 @@
+# pvc-dynamic.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-dynamic-hostpath-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard # VERY IMPORTANT !
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      type: hostpath
+      env: prod

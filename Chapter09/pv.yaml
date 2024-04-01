@@ -1,0 +1,17 @@
+# pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-hostpath-pv
+  labels:
+    type: hostpath
+    env: prod
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/test"
+  storageClassName: slow
+  # persistentVolumeReclaimPolicy: Delete
