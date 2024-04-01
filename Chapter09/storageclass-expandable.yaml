@@ -1,0 +1,8 @@
+# storageclass-expandable.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: expadable-sc
+provisioner: vendor-name.example/magicstorage
+...<removed for brevity>...
+allowVolumeExpansion: true

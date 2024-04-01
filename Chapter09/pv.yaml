@@ -12,5 +12,6 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/Users/me/test"
+    path: "/tmp/test"
   storageClassName: slow
+  # persistentVolumeReclaimPolicy: Delete
