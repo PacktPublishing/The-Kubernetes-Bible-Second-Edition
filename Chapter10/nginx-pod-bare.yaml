@@ -1,0 +1,14 @@
+# nginx-pod-bare.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-bare-example
+  labels:
+    app: nginx
+    environment: test
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.17
+      ports:
+        - containerPort: 80

@@ -3,65 +3,65 @@
 ## minikube configurations
 
 ```shell
-$ minikube config set cpus 4 
-❗  These changes will take effect upon a minikube delete and then a minikube start 
+$ minikube config set cpus 4
+❗  These changes will take effect upon a minikube delete and then a minikube start
 
-$ minikube config set memory 16000 
-❗  These changes will take effect upon a minikube delete and then a minikube start 
+$ minikube config set memory 16000
+❗  These changes will take effect upon a minikube delete and then a minikube start
 
-$  minikube config set driver podman 
-❗  These changes will take effect upon a minikube delete and then a minikube start 
+$  minikube config set driver podman
+❗  These changes will take effect upon a minikube delete and then a minikube start
 
-$  minikube config view driver  
-- driver: podman 
-- rootless: false 
+$  minikube config view driver
+- driver: podman
+- rootless: false
 ```
 
 ## Deploying Kubernetes using minikube
 
-On your workstation where you have installed minikube and VirtualBox, execute the following command. 
+On your workstation where you have installed minikube and VirtualBox, execute the following command.
 
 ```shell
-$ minikube start --driver=virtualbox --memory=8000m --cpus=2 
+$ minikube start --driver=virtualbox --memory=8000m --cpus=2
 ```
 
-If you are using an old version of minikube but you want to install different version of Kubernetes version, then you can mention the specific version as follows. 
+If you are using an old version of minikube but you want to install different version of Kubernetes version, then you can mention the specific version as follows.
 
 ```shell
-$ minikube start --driver=virtualbox --memory=8000m --cpus=2 --kubernetes-version=1.29.0 
+$ minikube start --driver=virtualbox --memory=8000m --cpus=2 --kubernetes-version=1.29.0
 ```
 
 ```shell
-$  minikube status 
-minikube 
-type: Control Plane 
-host: Running 
-kubelet: Running 
-apiserver: Running 
-kubeconfig: Configured 
+$  minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
 ```
 
 Using container
 
 ```shell
-$ minikube start --driver=docker --kubernetes-version=1.29.0 
+$ minikube start --driver=docker --kubernetes-version=1.29.0
 ```
 
 Check nodes
 
 ```shell
-$ kubectl get nodes 
-NAME       STATUS   ROLES           AGE     VERSION 
-minikube   Ready    control-plane   3m52s   v1.29.0 
+$ kubectl get nodes
+NAME       STATUS   ROLES           AGE     VERSION
+minikube   Ready    control-plane   3m52s   v1.29.0
 ```
 
 ```shell
-$ kubectl get componentstatuses 
+$ kubectl get componentstatuses
 Warning: v1 ComponentStatus is deprecated in v1.19+
 NAME                 STATUS    MESSAGE   ERROR
-controller-manager   Healthy   ok        
-scheduler            Healthy   ok        
-etcd-0               Healthy   ok  
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-0               Healthy   ok
 ```
 
 ## Stop/Pause/Delete minikube clusters
@@ -113,7 +113,7 @@ minikube-m03   Ready    <none>          44s   v1.28.3
 $ kind create cluster --name test-kind
 ```
 
-Config file creating multi-node cluster - eg: `~/.kube/kind_cluster `
+Config file creating multi-node cluster - eg: `~/.kube/kind_cluster`
 
 ```yaml
 kind: Cluster
@@ -122,11 +122,17 @@ nodes:
 - role: control-plane
 - role: worker
 - role: worker
-- role: worker 
+- role: worker
 ```
 
 Create cluster
 
 ```shell
-$ kind create cluster --config ~/.kube/kind_cluster 
+$ kind create cluster --config ~/.kube/kind_cluster
+```
+
+Start with Podman instead of Docker
+
+```shell
+$ KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config ~/.kube/kind_cluster
 ```
