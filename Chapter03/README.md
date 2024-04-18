@@ -136,3 +136,12 @@ Start with Podman instead of Docker
 ```shell
 $ KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config ~/.kube/kind_cluster
 ```
+
+Mention the Kubernetes version
+
+```shell
+$ kind create cluster \
+  --name my-kind-cluster \
+  --config ~/.kube/kind_cluster \
+  --image kindest/node:v1.29.0@sha256:eaa1450915475849a73a9227b8f201df25e55e268e5d619312131292e324d570
+```
