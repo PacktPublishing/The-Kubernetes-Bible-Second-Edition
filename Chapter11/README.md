@@ -198,6 +198,125 @@ Events:
   Normal  ScalingReplicaSet  9s    deployment-controller  Scaled up replica set nginx-deployment-readiness-69dd4cfdd9 to 10 from 3
 ```
 
+## Rolling Update
+
+```shell
+$ kubectl apply -f nginx-deployment-rollingupdate.yaml
+deployment.apps/nginx-deployment-rollingupdate created
+
+$ kubectl get po
+NAME                                              READY   STATUS    RESTARTS   AGE
+nginx-deployment-rollingupdate-69d855cf4b-nshn2   1/1     Running   0          24s
+nginx-deployment-rollingupdate-69d855cf4b-pqvjh   1/1     Running   0          24s
+nginx-deployment-rollingupdate-69d855cf4b-tdxzl   1/1     Running   0          24s
+
+$ kubectl get po -o wide
+NAME                                              READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+nginx-deployment-rollingupdate-69d855cf4b-nshn2   1/1     Running   0          50s   10.244.2.2   my-kind-cluster-worker    <none>           <none>
+nginx-deployment-rollingupdate-69d855cf4b-pqvjh   1/1     Running   0          50s   10.244.3.2   my-kind-cluster-worker3   <none>           <none>
+nginx-deployment-rollingupdate-69d855cf4b-tdxzl   1/1     Running   0          50s   10.244.1.2   my-kind-cluster-worker2   <none>           <none>
+
+$ kubectl get po -o wide | awk '{print $1, $2, $6, $7}'
+NAME READY IP NODE
+nginx-deployment-rollingupdate-69d855cf4b-nshn2 1/1 10.244.2.2 my-kind-cluster-worker
+nginx-deployment-rollingupdate-69d855cf4b-pqvjh 1/1 10.244.3.2 my-kind-cluster-worker3
+nginx-deployment-rollingupdate-69d855cf4b-tdxzl 1/1 10.244.1.2 my-kind-cluster-worker2
+```
+
+Update the YAML and apply Deployment
+
+```shell
+$ kubectl apply -f nginx-deployment-rollingupdate.yaml
+deployment.apps/nginx-deployment-rollingupdate configured
+
+$ kubectl rollout status deployment.apps/nginx-deployment-rollingupdate
+deployment "nginx-deployment-rollingupdate" successfully rolled out
+
+$ kubectl describe deploy nginx-deployment-rollingupdate
+Name:                   nginx-deployment-rollingupdate
+...<removed for brevity>...
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  8m21s  deployment-controller  Scaled up replica set nginx-deployment-rollingupdate-69d855cf4b to 3
+  Normal  ScalingReplicaSet  2m51s  deployment-controller  Scaled up replica set nginx-deployment-rollingupdate-5479f5d87f to 1
+  Normal  ScalingReplicaSet  2m51s  deployment-controller  Scaled down replica set nginx-deployment-rollingupdate-69d855cf4b to 2 from 3
+  Normal  ScalingReplicaSet  2m51s  deployment-controller  Scaled up replica set nginx-deployment-rollingupdate-5479f5d87f to 2 from 1
+  Normal  ScalingReplicaSet  2m24s  deployment-controller  Scaled down replica set nginx-deployment-rollingupdate-69d855cf4b to 1 from 2
+  Normal  ScalingReplicaSet  2m24s  deployment-controller  Scaled up replica set nginx-deployment-rollingupdate-5479f5d87f to 3 from 2
+  Normal  ScalingReplicaSet  2m14s  deployment-controller  Scaled down replica set nginx-deployment-rollingupdate-69d855cf4b to 0 from 1
+```
+
+Check RepicaSet
+
+```shell
+$ kubectl get rs
+NAME                                        DESIRED   CURRENT   READY   AGE
+nginx-deployment-rollingupdate-5479f5d87f   3         3         3       4m22s
+nginx-deployment-rollingupdate-69d855cf4b   0         0         0       9m52s
+```
+
+Check image
+
+```shell
+$ kubectl get po
+NAME                                              READY   STATUS    RESTARTS   AGE
+nginx-deployment-rollingupdate-5479f5d87f-2k7d6   1/1     Running   0          5m41s
+nginx-deployment-rollingupdate-5479f5d87f-6gn9m   1/1     Running   0          5m14s
+nginx-deployment-rollingupdate-5479f5d87f-mft6b   1/1     Running   0          5m41s
+
+$ kubectl describe pod nginx-deployment-rollingupdate-5479f5d87f-2k7d6|grep 'Image:'
+    Image:         nginx:1.18
+```
+
+Rolling update using imperative commands
+
+```shell
+$ kubectl set image deployment nginx-deployment-rollingupdate nginx=nginx:1.19
+deployment.apps/nginx-deployment-rollingupdate image updated
+
+$ kubectl rollout status deployment.apps/nginx-deployment-rollingupdate
+deployment "nginx-deployment-rollingupdate" successfully rolled out
+```
+
+Rollback
+
+```shell
+$ kubectl rollout history deployment.apps/nginx-deployment-rollingupdate
+deployment.apps/nginx-deployment-rollingupdate
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+
+$ kubectl rollout history deploy nginx-deployment-rollingupdate --revision=2
+deployment.apps/nginx-deployment-rollingupdate with revision #2
+Pod Template:
+  Labels:       app=nginx
+        environment=test
+        pod-template-hash=5479f5d87f
+  Containers:
+   nginx:
+    Image:      nginx:1.18
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Command:
+      /bin/sh
+      -c
+      touch /usr/share/nginx/html/ready
+      echo "You have been served by Pod with IP address: $(hostname -i)" > /usr/share/nginx/html/index.html
+      nginx -g "daemon off;"
+
+    Readiness:  http-get http://:80/ready delay=5s timeout=10s period=2s #success=1 #failure=2
+    Environment:        <none>
+    Mounts:     <none>
+  Volumes:      <none>
+
+$ kubectl rollout undo deploy nginx-deployment-rollingupdate
+deployment.apps/nginx-deployment-rollingupdate rolled back
+```
+
+
 ## Appendix
 
 ### Building container image
