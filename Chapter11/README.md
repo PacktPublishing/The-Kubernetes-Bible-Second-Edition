@@ -2,6 +2,37 @@
 
 ## Create Deployment
 
+Create Skeleton
+
+```shell
+$ kubectl create deployment my-deployment --replicas=1 --image=my-image:latest --dry-run=client --port=80 -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-deployment
+  name: my-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-deployment
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: my-deployment
+    spec:
+      containers:
+      - image: my-image:latest
+        name: my-image
+        ports:
+        - containerPort: 80
+        resources: {}
+```
+
 ```shell
 $ kubectl apply -f ./nginx-deployment.yaml
 
@@ -326,6 +357,35 @@ REVISION  CHANGE-CAUSE
 4         <none>
 ```
 
+## Canary Deployments
+
+```yaml
+# Stable app
+  ...
+  name: frontend-stable
+  replicas: 3
+  ...
+  labels:
+    app: myapp
+    tier: frontend
+    version: stable
+  ...
+  image: frontend-app:1.0
+```
+
+```yaml
+# Canary version
+  ...
+  name: frontend-canary
+  replicas: 1
+  ...
+  labels:
+    app: myapp
+    tier: frontend
+    version: canary
+  ...
+  image: frontend-app:2.0
+```
 
 ## Appendix
 
