@@ -1,0 +1,17 @@
+# nginx-for-readinessprobe
+FROM nginx:latest
+
+# Copy the modified index.html file
+COPY index.html /usr/share/nginx/html/
+
+# Copy the ready file
+COPY ready /usr/share/nginx/html/
+
+# Replace the default index.html with the custom one
+# RUN rm /etc/nginx/html/index.html && ln -s /usr/share/nginx/html/index.html /etc/nginx/html/
+
+# Expose the default port (80)
+EXPOSE 80
+
+# Use the default CMD from the Nginx image
+CMD ["nginx", "-g", "daemon off;"]
