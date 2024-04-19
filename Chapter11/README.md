@@ -314,6 +314,16 @@ Pod Template:
 
 $ kubectl rollout undo deploy nginx-deployment-rollingupdate
 deployment.apps/nginx-deployment-rollingupdate rolled back
+
+# or
+kubectl rollout undo deploy nginx-deployment-rollingupdate --to-revision=2
+
+$ kubectl rollout history deployment.apps/nginx-deployment-rollingupdate
+deployment.apps/nginx-deployment-rollingupdate
+REVISION  CHANGE-CAUSE
+1         <none>
+3         <none>
+4         <none>
 ```
 
 
