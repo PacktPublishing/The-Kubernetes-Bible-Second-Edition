@@ -1,0 +1,13 @@
+# mysql-headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+  namespace: mysql
+spec:
+  selector:
+    app: mysql
+    environment: test
+  clusterIP: None
+  ports:
+    - port: 3306
