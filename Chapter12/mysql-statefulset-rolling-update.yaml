@@ -12,7 +12,7 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      partition: 3
+      partition: 0
   replicas: 3
   selector:
     matchLabels:

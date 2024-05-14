@@ -140,8 +140,8 @@ root@k8sutils:/#
 root@k8sutils:/# mysql -u root -p -h mysql-headless.mysql.svc.cluster.local
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 9
-Server version: 8.4.0 MySQL Community Server - GPL
+Your MySQL connection id is 8
+Server version: 8.2.0 MySQL Community Server - GPL
 
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
@@ -180,8 +180,8 @@ Address: 10.244.0.16
 root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 13
-Server version: 8.4.0 MySQL Community Server - GPL
+Your MySQL connection id is 8
+Server version: 8.2.0 MySQL Community Server - GPL
 
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
@@ -212,8 +212,8 @@ mysql-stateful-2   1/1     Running   0          51m
 root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 9
-Server version: 8.4.0 MySQL Community Server - GPL
+Your MySQL connection id is 8
+Server version: 8.2.0 MySQL Community Server - GPL
 
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
@@ -383,8 +383,8 @@ $  kubectl exec -it -n mysql k8sutils -- /bin/bash
 root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 14
-Server version: 8.4.0 MySQL Community Server - GPL
+Your MySQL connection id is 8
+Server version: 8.2.0 MySQL Community Server - GPL
 
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
@@ -413,4 +413,104 @@ statefulset.apps/mysql-stateful image updated
 ```shell
 $ kubectl apply -f mysql-statefulset-rolling-update.yaml
 statefulset.apps/mysql-stateful configured
+
+$ kubectl rollout status statefulset -n mysql
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for partitioned roll out to finish: 1 out of 3 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for partitioned roll out to finish: 2 out of 3 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 3 new pods have been updated...
+```
+
+```shell
+$ kubectl exec -it -n mysql k8sutils -- /bin/bash
+root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.3.0 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| ststest            |
+| sys                |
++--------------------+
+5 rows in set (0.002 sec)
+```
+
+## Canary update and Stage update
+
+Update `partition: 3` and `image: mysql:8.4.0`
+
+```shel
+$ kubectl apply -f mysql-statefulset-rolling-update.yaml
+statefulset.apps/mysql-stateful configured
+```
+
+Update `partition: 2`
+
+```shell
+$ kubectl apply -f mysql-statefulset-rolling-update.yaml
+statefulset.apps/mysql-stateful configured
+
+$ kubectl rollout status statefulset -n mysql
+Waiting for partitioned roll out to finish: 0 out of 1 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+```
+
+```shell
+$ kubectl describe pod -n mysql mysql-stateful-0|grep Image
+    Image:          mysql:8.3.0
+    Image ID:       docker-pullable://mysql@sha256:9de9d54fecee6253130e65154b930978b1fcc336bcc86dfd06e89b72a2588ebe
+
+$ kubectl describe pod -n mysql mysql-stateful-2|grep Image
+    Image:          mysql:8.4.0
+    Image ID:       docker-pullable://mysql@sha256:4a4e5e2a19aab7a67870588952e8f401e17a330466ecfc55c9acf51196da5bd0
+```
+
+Full phase out to new image
+
+```shell
+$ kubectl apply -f mysql-statefulset-rolling-update.yaml
+statefulset.apps/mysql-stateful configured
+
+$ kubectl rollout status statefulset -n mysql
+Waiting for partitioned roll out to finish: 1 out of 3 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for partitioned roll out to finish: 2 out of 3 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 3 new pods have been updated...
+```
+
+Imperative rollout
+
+```shell
+$ kubectl patch sts mysql-stateful -p '{"spec":{"updateStrategy":{"type":"RollingUpdate","rollingUpdate":{"partition":3}}}}' -n mysql
+statefulset.apps/mysql-stateful patched
 ```
