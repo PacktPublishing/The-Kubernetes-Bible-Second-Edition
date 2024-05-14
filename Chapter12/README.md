@@ -320,3 +320,97 @@ persistentvolumeclaim "mysql-data-mysql-stateful-1" deleted
 persistentvolumeclaim "mysql-data-mysql-stateful-2" deleted
 persistentvolumeclaim "mysql-data-mysql-stateful-3" deleted
 ```
+
+## Rolling update
+
+```shell
+$ kubectl apply -f mysql-statefulset-rolling-update.yaml
+statefulset.apps/mysql-stateful created
+```
+
+```shell
+$ kubectl get po -n mysql
+NAME               READY   STATUS    RESTARTS      AGE
+k8sutils           1/1     Running   1 (21h ago)   23h
+mysql-stateful-0   1/1     Running   0             65s
+mysql-stateful-1   1/1     Running   0             62s
+mysql-stateful-2   1/1     Running   0             58s
+```
+
+```shell
+$ kubectl apply -f mysql-statefulset-rolling-update.yaml
+statefulset.apps/mysql-stateful configured
+
+$ kubectl rollout status statefulset -n mysql
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for partitioned roll out to finish: 2 out of 3 new pods have been updated...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 3 new pods have been updated...
+
+
+$ kubectl describe sts -n mysql mysql-stateful
+Name:               mysql-stateful
+Namespace:          mysql
+...<removed for brevity>...
+Events:
+  Type     Reason                   Age                From                    Message
+  ----     ------                   ----               ----                    -------
+  Normal   SuccessfulCreate         94s                statefulset-controller  create Claim mysql-data-mysql-stateful-0 Pod mysql-stateful-0 in StatefulSet mysql-stateful success
+  Normal   SuccessfulCreate         94s                statefulset-controller  create Pod mysql-stateful-0 in StatefulSet mysql-stateful successful
+  Normal   SuccessfulCreate         91s                statefulset-controller  create Claim mysql-data-mysql-stateful-1 Pod mysql-stateful-1 in StatefulSet mysql-stateful success
+  Normal   SuccessfulCreate         91s                statefulset-controller  create Pod mysql-stateful-1 in StatefulSet mysql-stateful successful
+  Normal   SuccessfulCreate         88s                statefulset-controller  create Claim mysql-data-mysql-stateful-2 Pod mysql-stateful-2 in StatefulSet mysql-stateful success
+  Normal   SuccessfulCreate         72s (x2 over 88s)  statefulset-controller  create Pod mysql-stateful-2 in StatefulSet mysql-stateful successful
+  Normal   SuccessfulDelete         72s (x7 over 73s)  statefulset-controller  delete Pod mysql-stateful-2 in StatefulSet mysql-stateful successful
+  Normal   RecreatingTerminatedPod  72s (x7 over 72s)  statefulset-controller  StatefulSet mysql/mysql-stateful is recreating terminated Pod mysql-stateful-2
+  Warning  FailedDelete             72s                statefulset-controller  delete Pod mysql-stateful-2 in StatefulSet mysql-stateful failed error: pods "mysql-stateful-2" not found
+  Normal   SuccessfulDelete         70s (x2 over 71s)  statefulset-controller  delete Pod mysql-stateful-1 in StatefulSet mysql-stateful successful
+  Normal   RecreatingTerminatedPod  70s                statefulset-controller  StatefulSet mysql/mysql-stateful is recreating terminated Pod mysql-stateful-1
+```
+
+```shell
+$ kubectl describe pod -n mysql mysql-stateful-0|grep Image
+    Image:          mysql:8.4.0
+    Image ID:       docker-pullable://mysql@sha256:4a4e5e2a19aab7a67870588952e8f401e17a330466ecfc55c9acf51196da5bd0
+```
+
+```shell
+$  kubectl exec -it -n mysql k8sutils -- /bin/bash
+root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 14
+Server version: 8.4.0 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| ststest            |
+| sys                |
++--------------------+
+5 rows in set (0.002 sec)
+
+MySQL [(none)]>
+```
+
+```shell
+$ kubectl -n mysql set image sts mysql-stateful mysql=mysql:8.3.0
+statefulset.apps/mysql-stateful image updated
+```
+
+```shell
+$ kubectl apply -f mysql-statefulset-rolling-update.yaml
+statefulset.apps/mysql-stateful configured
+```
