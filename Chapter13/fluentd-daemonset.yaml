@@ -1,8 +1,16 @@
+# fluentd-daemonset.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging
+
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd-elasticsearch
-  namespace: kube-system
+  namespace: logging
   labels:
     k8s-app: fluentd-logging
 spec:
@@ -17,29 +25,38 @@ spec:
       tolerations:
       # these tolerations are to have the daemonset runnable on control plane nodes
       # remove them if your control plane nodes should not run pods
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-        effect: NoSchedule
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       containers:
-      - name: fluentd-elasticsearch
-        image: quay.io/fluentd_elasticsearch/fluentd:v2.5.2
-        resources:
-          limits:
-            memory: 200Mi
-          requests:
-            cpu: 100m
-            memory: 200Mi
-        volumeMounts:
-        - name: varlog
-          mountPath: /var/log
+        - name: fluentd-elasticsearch
+          image: quay.io/fluentd_elasticsearch/fluentd:v4.7.5
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+          env:
+          - name:  FLUENT_ELASTICSEARCH_HOST
+            value: "elasticsearch-logging"
+          - name:  FLUENT_ELASTICSEARCH_PORT
+            value: "9200"
+          - name:  FLUENT_ELASTICSEARCH_SSL_VERIFY
+            value: "true"
+          - name:  FLUENT_ELASTICSEARCH_SSL_VERSION
+            value: "TLSv1_2"
       # it may be desirable to set a high priority class to ensure that a DaemonSet Pod
       # preempts running Pods
-      # priorityClassName: important
+      priorityClassName: fluentd-priority
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: varlog
-        hostPath:
-          path: /var/log
+        - name: varlog
+          hostPath:
+            path: /var/log
