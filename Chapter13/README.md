@@ -37,3 +37,146 @@ calico-node-sg66x                         1/1     Running   0          67m   192
 ```
 
 ## Create DaemonSet
+
+```shell
+$ kubectl apply -f fluentd-daemonset.yaml
+namespace/logging created
+daemonset.apps/fluentd-elasticsearch created
+```
+
+```shell
+$  kubectl describe daemonset fluentd-elasticsearch -n logging
+Name:           fluentd-elasticsearch
+Selector:       name=fluentd-elasticsearch
+Node-Selector:  <none>
+Labels:         k8s-app=fluentd-logging
+Annotations:    deprecated.daemonset.template.generation: 1
+Desired Number of Nodes Scheduled: 3
+Current Number of Nodes Scheduled: 3
+Number of Nodes Scheduled with Up-to-date Pods: 3
+Number of Nodes Scheduled with Available Pods: 3
+Number of Nodes Misscheduled: 0
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  name=fluentd-elasticsearch
+  Containers:
+   fluentd-elasticsearch:
+    Image:      quay.io/fluentd_elasticsearch/fluentd:v4.7
+    Port:       <none>
+    Host Port:  <none>
+    Limits:
+      memory:  200Mi
+    Requests:
+      cpu:        100m
+      memory:     200Mi
+    Environment:  <none>
+    Mounts:
+      /var/log from varlog (rw)
+  Volumes:
+   varlog:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/log
+    HostPathType:
+Events:
+  Type    Reason            Age    From                  Message
+  ----    ------            ----   ----                  -------
+  Normal  SuccessfulCreate  2m47s  daemonset-controller  Created pod: fluentd-elasticsearch-cs4hm
+  Normal  SuccessfulCreate  2m47s  daemonset-controller  Created pod: fluentd-elasticsearch-zk6pt
+  Normal  SuccessfulCreate  2m47s  daemonset-controller  Created pod: fluentd-elasticsearch-stfqs
+```
+
+```shell
+$ kubectl get po -n logging -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP               NODE           NOMINATED NODE   READINESS GATES
+fluentd-elasticsearch-cs4hm   1/1     Running   0          3m48s   10.244.120.68    minikube       <none>           <none>
+fluentd-elasticsearch-stfqs   1/1     Running   0          3m48s   10.244.205.194   minikube-m02   <none>           <none>
+fluentd-elasticsearch-zk6pt   1/1     Running   0          3m48s   10.244.151.2     minikube-m03   <none>           <none>
+```
+
+Check log files mounted inside containers.
+
+```shell
+$ kubectl exec -n logging -it fluentd-elasticsearch-cs4hm -- /bin/bash
+root@fluentd-elasticsearch-cs4hm:/# ls -l /var/log/
+total 20
+drwxr-xr-x  3 root root 4096 May 29 10:56 calico
+drwxr-xr-x  2 root root 4096 May 29 12:40 containers
+drwx------  3 root root 4096 May 29 10:55 crio
+drwxr-xr-x  2 root root 4096 May 29 11:53 journal
+drwxr-x--- 12 root root 4096 May 29 12:40 pods
+root@fluentd-elasticsearch-cs4hm:/#
+```
+
+## Modify DaemonSet
+
+```shell
+$ kubectl apply -f fluentd-daemonset.yaml
+namespace/logging unchanged
+daemonset.apps/fluentd-elasticsearch configured
+
+$ kubectl rollout status ds -n logging
+Waiting for daemon set "fluentd-elasticsearch" rollout to finish: 2 out of 3 new pods have been updated...
+Waiting for daemon set "fluentd-elasticsearch" rollout to finish: 2 out of 3 new pods have been updated...
+Waiting for daemon set "fluentd-elasticsearch" rollout to finish: 2 of 3 updated pods are available...
+daemon set "fluentd-elasticsearch" successfully rolled out
+```
+
+```shell
+$ kubectl describe ds -n logging
+Name:           fluentd-elasticsearch
+Selector:       name=fluentd-elasticsearch
+Node-Selector:  <none>
+Labels:         k8s-app=fluentd-logging
+Annotations:    deprecated.daemonset.template.generation: 2
+Desired Number of Nodes Scheduled: 3
+Current Number of Nodes Scheduled: 3
+Number of Nodes Scheduled with Up-to-date Pods: 3
+Number of Nodes Scheduled with Available Pods: 3
+Number of Nodes Misscheduled: 0
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  name=fluentd-elasticsearch
+  Containers:
+   fluentd-elasticsearch:
+    Image:      quay.io/fluentd_elasticsearch/fluentd:v4.7.5
+    Port:       <none>
+    Host Port:  <none>
+    Limits:
+      memory:  200Mi
+    Requests:
+      cpu:     100m
+      memory:  200Mi
+    Environment:
+      FLUENT_ELASTICSEARCH_HOST:         elasticsearch-logging
+      FLUENT_ELASTICSEARCH_PORT:         9200
+      FLUENT_ELASTICSEARCH_SSL_VERIFY:   true
+      FLUENT_ELASTICSEARCH_SSL_VERSION:  TLSv1_2
+    Mounts:
+      /var/log from varlog (rw)
+  Volumes:
+   varlog:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/log
+    HostPathType:
+Events:
+  Type    Reason            Age    From                  Message
+  ----    ------            ----   ----                  -------
+  Normal  SuccessfulDelete  6m7s   daemonset-controller  Deleted pod: fluentd-elasticsearch-cs4hm
+  Normal  SuccessfulCreate  6m5s   daemonset-controller  Created pod: fluentd-elasticsearch-62cvj
+  Normal  SuccessfulDelete  6m     daemonset-controller  Deleted pod: fluentd-elasticsearch-stfqs
+  Normal  SuccessfulCreate  5m58s  daemonset-controller  Created pod: fluentd-elasticsearch-24v2z
+  Normal  SuccessfulDelete  5m52s  daemonset-controller  Deleted pod: fluentd-elasticsearch-zk6pt
+  Normal  SuccessfulCreate  5m51s  daemonset-controller  Created pod: fluentd-elasticsearch-fxffp
+```
+
+## Rollbakck
+
+```shell
+$ kubectl rollout undo daemonsetfluentd-elasticsearch -n logging
+```
+
+## Delete
+
+```shell
+$ kubectl delete ds fluentd-elasticsearch -nlogging
+```
