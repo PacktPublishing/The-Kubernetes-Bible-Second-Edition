@@ -44,7 +44,7 @@ kubeconfig: Configured
 Using container
 
 ```shell
-$ minikube start --driver=docker --kubernetes-version=1.29.0
+$ minikube start --driver=docker --kubernetes-version=1.30.0
 ```
 
 Check nodes
@@ -79,6 +79,11 @@ kubelet: Stopped
 apiserver: Stopped
 kubeconfig: Stopped
 
+$ minikube delete
+🔥  Deleting "minikube" in docker ...
+🔥  Deleting container "minikube" ...
+🔥  Removing /home/gmadappa/.minikube/machines/minikube ...
+💀  Removed all traces of the "minikube" cluster.
 ```
 
 
@@ -86,13 +91,23 @@ kubeconfig: Stopped
 
 ```shell
 # Start a minikube cluster using Podman as driver.
-$ minikube start --profile cluster2-podman --driver=podman
+$ minikube start --profile cluster-docker --driver=podman
+
+$ minikube start --profile cluster-vbox --driver=virtualbox
+
+$ minikube profile list
+|----------------|------------|------------|----------------|------|---------|---------|-------|----------------|--------------------|
+|    Profile     | VM Driver  |  Runtime   |       IP       | Port | Version | Status  | Nodes | Active Profile | Active Kubecontext |
+|----------------|------------|------------|----------------|------|---------|---------|-------|----------------|--------------------|
+| cluster-docker | docker     | containerd | 192.168.49.2   | 8443 | v1.30.0 | Running |     1 |                |                    |
+| cluster-vbox   | virtualbox | containerd | 192.168.59.145 | 8443 | v1.30.0 | Running |     1 |                | *                  |
+|----------------|------------|------------|----------------|------|---------|---------|-------|----------------|--------------------|
 
 # Stop cluster
-$ minikube stop --profile cluster2-podman
+$ minikube stop --profile cluster-docker
 
 # Remove the cluster
-$ minikube delete --profile cluster2-podman
+$ minikube delete --profile cluster-podman
 ```
 
 ## Multi-node Kubernetes using minikube
@@ -109,8 +124,57 @@ minikube-m03   Ready    <none>          44s   v1.28.3
 
 ## Creating cluster using kind
 
+
+```shell
+
+```
+
 ```shell
 $ kind create cluster --name test-kind
+```
+
+```shell
+$ kubectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:42547
+CoreDNS is running at https://127.0.0.1:42547/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+$ kubectl get --raw='/readyz?verbose'
+[+]ping ok
+[+]log ok
+[+]etcd ok
+[+]etcd-readiness ok
+[+]informer-sync ok
+[+]poststarthook/start-apiserver-admission-initializer ok
+[+]poststarthook/generic-apiserver-start-informers ok
+[+]poststarthook/priority-and-fairness-config-consumer ok
+[+]poststarthook/priority-and-fairness-filter ok
+[+]poststarthook/storage-object-count-tracker-hook ok
+[+]poststarthook/start-apiextensions-informers ok
+[+]poststarthook/start-apiextensions-controllers ok
+[+]poststarthook/crd-informer-synced ok
+[+]poststarthook/start-service-ip-repair-controllers ok
+[+]poststarthook/rbac/bootstrap-roles ok
+[+]poststarthook/scheduling/bootstrap-system-priority-classes ok
+[+]poststarthook/priority-and-fairness-config-producer ok
+[+]poststarthook/start-system-namespaces-controller ok
+[+]poststarthook/bootstrap-controller ok
+[+]poststarthook/start-cluster-authentication-info-controller ok
+[+]poststarthook/start-kube-apiserver-identity-lease-controller ok
+[+]poststarthook/start-kube-apiserver-identity-lease-garbage-collector ok
+[+]poststarthook/start-legacy-token-tracking-controller ok
+[+]poststarthook/aggregator-reload-proxy-client-cert ok
+[+]poststarthook/start-kube-aggregator-informers ok
+[+]poststarthook/apiservice-registration-controller ok
+[+]poststarthook/apiservice-status-available-controller ok
+[+]poststarthook/apiservice-discovery-controller ok
+[+]poststarthook/kube-apiserver-autoregistration ok
+[+]autoregister-completion ok
+[+]poststarthook/apiservice-openapi-controller ok
+[+]poststarthook/apiservice-openapiv3-controller ok
+[+]shutdown ok
+readyz check passed
 ```
 
 Config file creating multi-node cluster - eg: `~/.kube/kind_cluster`

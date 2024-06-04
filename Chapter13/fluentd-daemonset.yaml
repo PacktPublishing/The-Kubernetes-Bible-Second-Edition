@@ -54,7 +54,7 @@ spec:
             value: "TLSv1_2"
       # it may be desirable to set a high priority class to ensure that a DaemonSet Pod
       # preempts running Pods
-      priorityClassName: fluentd-priority
+      # priorityClassName: fluentd-priority
       terminationGracePeriodSeconds: 30
       volumes:
         - name: varlog

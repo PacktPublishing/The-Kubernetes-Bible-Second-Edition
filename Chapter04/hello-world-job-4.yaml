@@ -1,18 +1,18 @@
-# hello-world-job-4.yaml 
-apiVersion: batch/v1 
-kind: Job 
-metadata: 
-  name: hello-world-job 
-spec: 
+# hello-world-job-4.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-world-job-4
+spec:
   backoffLimit: 3
   parallelism: 5
-  template: 
-    metadata: 
+  template:
+    metadata:
       name: hello-world-job-4
-    spec: 
-      restartPolicy: OnFailure 
-      containers: 
-      - name: hello-world-container 
-        image: busybox 
-        command: ["/bin/sh", "-c"] 
-        args: ["echo 'Hello world'; sleep 3"]
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: hello-world-container
+          image: busybox
+          command: ["/bin/sh", "-c"]
+          args: ["echo 'Hello world'; sleep 3"]
