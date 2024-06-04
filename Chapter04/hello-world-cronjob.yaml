@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: hello-world-cronjob
 spec:
-  schedule: "*/1 * * * *"  
+  schedule: "*/1 * * * *"
   # Run every minute
   successfulJobsHistoryLimit: 5
   startingDeadlineSeconds: 30
@@ -16,8 +16,8 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: hello-world-container
-            image: busybox
-            imagePullPolicy: IfNotPresent
-            command: ["/bin/sh", "-c"]
-            args: ["echo 'Hello world'"]
+            - name: hello-world-container
+              image: busybox
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/sh", "-c"]
+              args: ["echo 'Hello world'"]

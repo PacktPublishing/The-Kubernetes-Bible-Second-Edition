@@ -10,13 +10,38 @@ $ minikube start \
   --cni calico \
   --cpus=2 \
   --memory=2g \
-  --kubernetes-version=v1.30.0
+  --kubernetes-version=v1.30.0 \
+  --container-runtime=containerd
+
 
 $ kubectl get nodes
 NAME           STATUS   ROLES           AGE     VERSION
 minikube       Ready    control-plane   3m28s   v1.30.0
 minikube-m02   Ready    <none>          2m29s   v1.30.0
 minikube-m03   Ready    <none>          91s     v1.30.0
+```
+
+## Create multi-master minikube
+
+```shell
+$ minikube start \
+  --driver=virtualbox \
+  --nodes 5 \
+  --ha \
+  --cni calico \
+  --cpus=2 \
+  --memory=2g \
+  --kubernetes-version=v1.30.0 \
+  --container-runtime=containerd
+
+
+$ kubectl get nodes
+NAME           STATUS   ROLES           AGE     VERSION
+minikube       Ready    control-plane   6m28s   v1.30.0
+minikube-m02   Ready    control-plane   4m36s   v1.30.0
+minikube-m03   Ready    control-plane   2m45s   v1.30.0
+minikube-m04   Ready    <none>          112s    v1.30.0
+minikube-m05   Ready    <none>          62s     v1.30.0
 ```
 
 ```shell
