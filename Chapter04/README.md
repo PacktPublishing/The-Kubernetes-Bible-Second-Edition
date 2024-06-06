@@ -87,7 +87,7 @@ $ kubectl get pods <POD_NAME> -o json
 ## Backup resource YAML
 
 ```shell
-$ kubectl get pods/nginx-pod -o yaml > nginx-pod-output.yaml
+$ kubectl get pods/nginx-pod -o yaml > nginx-pod-out.yaml
 ```
 
 ## List wide
