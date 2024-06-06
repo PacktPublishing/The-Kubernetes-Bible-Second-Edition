@@ -383,15 +383,20 @@ Get services
 ```shell
 $ kubectl get svc -n monitoring
 NAME                                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-alertmanager-operated                          ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   34m
-grafana-grafana-operator-grafana-service       ClusterIP   10.101.236.148   <none>        3000/TCP                     5m43s
-prometheus-kube-prometheus-alertmanager        ClusterIP   10.106.0.252     <none>        9093/TCP                     35m
-prometheus-kube-prometheus-blackbox-exporter   ClusterIP   10.97.130.28     <none>        19115/TCP                    35m
-prometheus-kube-prometheus-operator            ClusterIP   10.99.39.207     <none>        8080/TCP                     35m
-prometheus-kube-prometheus-prometheus          ClusterIP   10.96.218.94     <none>        9090/TCP                     35m
-prometheus-kube-state-metrics                  ClusterIP   10.106.101.139   <none>        8080/TCP                     35m
-prometheus-node-exporter                       ClusterIP   10.104.57.79     <none>        9100/TCP                     35m
-prometheus-operated                            ClusterIP   None             <none>        9090/TCP                     34m
+alertmanager-operated                          ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   73m
+grafana-grafana-operator-grafana-service       NodePort    10.100.76.214    <none>        3000:30298/TCP               30m
+prometheus-kube-prometheus-alertmanager        ClusterIP   10.106.0.252     <none>        9093/TCP                     74m
+prometheus-kube-prometheus-blackbox-exporter   ClusterIP   10.97.130.28     <none>        19115/TCP                    74m
+prometheus-kube-prometheus-operator            ClusterIP   10.99.39.207     <none>        8080/TCP                     74m
+prometheus-kube-prometheus-prometheus          ClusterIP   10.96.218.94     <none>        9090/TCP                     74m
+prometheus-kube-state-metrics                  ClusterIP   10.106.101.139   <none>        8080/TCP                     74m
+prometheus-node-exporter                       ClusterIP   10.104.57.79     <none>        9100/TCP                     74m
+prometheus-operated                            ClusterIP   None             <none>        9090/TCP                     73m
+```
+
+```shell
+$ minikube service --url grafana-grafana-operator-grafana-service -n monitoring
+http://192.168.59.153:30298
 ```
 
 Get Grafana login password
@@ -420,6 +425,7 @@ ack-memorydb-controller                    Community Operators   2m28s
 ...
 ```
 
-
+```
 $ kubectl patch svc prometheus-k8s -n monitoring --type merge -p '{"spec":{"type": "NodePort"}}'
 service/prometheus-k8s patched
+```
