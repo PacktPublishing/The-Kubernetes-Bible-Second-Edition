@@ -1,0 +1,4 @@
+# grafana-values.yaml
+grafana:
+  service:
+    type: NodePort

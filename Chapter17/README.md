@@ -243,8 +243,164 @@ Update Complete. ⎈Happy Helming!⎈
 ```
 
 ```shell
-$ helm install prometheus bitnami/kube-prometheus
+$ helm install prometheus bitnami/kube-prometheus --create-namespace --namespace monitoring
+NAME: prometheus
+LAST DEPLOYED: Thu Jun  6 14:45:28 2024
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: kube-prometheus
+CHART VERSION: 9.3.0
+APP VERSION: 0.74.0
+
+** Please be patient while the chart is being deployed **
+
+Watch the Prometheus Operator Deployment status using the command:
+
+    kubectl get deploy -w --namespace monitoring -l app.kubernetes.io/name=kube-prometheus-operator,app.kubernetes.io/instance=prometheus
+
+Watch the Prometheus StatefulSet status using the command:
+
+    kubectl get sts -w --namespace monitoring -l app.kubernetes.io/name=kube-prometheus-prometheus,app.kubernetes.io/instance=prometheus
+
+Prometheus can be accessed via port "9090" on the following DNS name from within your cluster:
+
+    prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local
+
+To access Prometheus from outside the cluster execute the following commands:
+
+    echo "Prometheus URL: http://127.0.0.1:9090/"
+    kubectl port-forward --namespace monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090
+
+Watch the Alertmanager StatefulSet status using the command:
+
+    kubectl get sts -w --namespace monitoring -l app.kubernetes.io/name=kube-prometheus-alertmanager,app.kubernetes.io/instance=prometheus
+
+Alertmanager can be accessed via port "9093" on the following DNS name from within your cluster:
+
+    prometheus-kube-prometheus-alertmanager.monitoring.svc.cluster.local
+
+To access Alertmanager from outside the cluster execute the following commands:
+
+    echo "Alertmanager URL: http://127.0.0.1:9093/"
+    kubectl port-forward --namespace monitoring svc/prometheus-kube-prometheus-alertmanager 9093:9093
+
+WARNING: There are "resources" sections in the chart not set. Using "resourcesPreset" is not recommended for production. For production installations, please set the following values according to your workload needs:
+  - alertmanager.resources
+  - blackboxExporter.resources
+  - operator.resources
+  - prometheus.resources
+  - prometheus.thanos.resources
++info https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
 ```
+
+```shell
+$  kubectl get pod,svc,sts -n monitoring
+NAME                                                              READY   STATUS    RESTARTS   AGE
+pod/alertmanager-prometheus-kube-prometheus-alertmanager-0        2/2     Running   0          8m10s
+pod/prometheus-kube-prometheus-blackbox-exporter-984564d5-z264l   1/1     Running   0          9m8s
+pod/prometheus-kube-prometheus-operator-6ccb785575-xbkdp          1/1     Running   0          9m8s
+pod/prometheus-kube-state-metrics-9d66f5498-dftlx                 1/1     Running   0          9m8s
+pod/prometheus-node-exporter-vcfsz                                1/1     Running   0          9m8s
+pod/prometheus-prometheus-kube-prometheus-prometheus-0            2/2     Running   0          8m10s
+
+NAME                                                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+service/alertmanager-operated                          ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   8m10s
+service/prometheus-kube-prometheus-alertmanager        ClusterIP   10.106.0.252     <none>        9093/TCP                     9m8s
+service/prometheus-kube-prometheus-blackbox-exporter   ClusterIP   10.97.130.28     <none>        19115/TCP                    9m8s
+service/prometheus-kube-prometheus-operator            ClusterIP   10.99.39.207     <none>        8080/TCP                     9m8s
+service/prometheus-kube-prometheus-prometheus          ClusterIP   10.96.218.94     <none>        9090/TCP                     9m8s
+service/prometheus-kube-state-metrics                  ClusterIP   10.106.101.139   <none>        8080/TCP                     9m8s
+service/prometheus-node-exporter                       ClusterIP   10.104.57.79     <none>        9100/TCP                     9m8s
+service/prometheus-operated                            ClusterIP   None             <none>        9090/TCP                     8m10s
+
+NAME                                                                    READY   AGE
+statefulset.apps/alertmanager-prometheus-kube-prometheus-alertmanager   1/1     8m10s
+statefulset.apps/prometheus-prometheus-kube-prometheus-prometheus       1/1     8m10s
+```
+
+Install Grafana
+
+```shell
+$ helm install grafana bitnami/grafana-operator -n monitoring --values grafana-values.yaml
+NAME: grafana
+LAST DEPLOYED: Thu Jun  6 15:15:11 2024
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: grafana-operator
+CHART VERSION: 4.4.3
+APP VERSION: 5.9.2
+
+** Please be patient while the chart is being deployed **
+
+Watch the Grafana Operator Deployment status using the command:
+
+    kubectl get deploy -w --namespace monitoring -l app.kubernetes.io/name=grafana-operator,app.kubernetes.io/instance=grafana
+
+
+WARNING: There are "resources" sections in the chart not set. Using "resourcesPreset" is not recommended for production. For production installations, please set the following values according to your workload needs:
+  - grafana.resources
+  - operator.resources
++info https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+```
+
+```shell
+$ kubectl get po -n monitoring |grep grafana
+grafana-grafana-operator-787b5cfcf-p9sf9                       0/1     Running   1 (8s ago)   2m24s
+grafana-grafana-operator-grafana-deployment-6fd9bd9485-9xt4n   1/1     Running   0            2m8s
+```
+
+CRD
+
+```shell
+$ kubectl get crd
+NAME                                             CREATED AT
+alertmanagerconfigs.monitoring.coreos.com        2024-06-06T06:45:27Z
+alertmanagers.monitoring.coreos.com              2024-06-06T06:45:27Z
+grafanaalertrulegroups.grafana.integreatly.org   2024-06-06T07:15:09Z
+grafanadashboards.grafana.integreatly.org        2024-06-06T07:15:09Z
+grafanadatasources.grafana.integreatly.org       2024-06-06T07:15:09Z
+grafanafolders.grafana.integreatly.org           2024-06-06T07:15:09Z
+grafanas.grafana.integreatly.org                 2024-06-06T07:15:09Z
+podmonitors.monitoring.coreos.com                2024-06-06T06:45:27Z
+probes.monitoring.coreos.com                     2024-06-06T06:45:27Z
+prometheusagents.monitoring.coreos.com           2024-06-06T06:45:28Z
+prometheuses.monitoring.coreos.com               2024-06-06T06:45:28Z
+prometheusrules.monitoring.coreos.com            2024-06-06T06:45:28Z
+scrapeconfigs.monitoring.coreos.com              2024-06-06T06:45:28Z
+servicemonitors.monitoring.coreos.com            2024-06-06T06:45:28Z
+thanosrulers.monitoring.coreos.com               2024-06-06T06:45:28Z
+```
+
+Get services
+
+```shell
+$ kubectl get svc -n monitoring
+NAME                                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+alertmanager-operated                          ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   34m
+grafana-grafana-operator-grafana-service       ClusterIP   10.101.236.148   <none>        3000/TCP                     5m43s
+prometheus-kube-prometheus-alertmanager        ClusterIP   10.106.0.252     <none>        9093/TCP                     35m
+prometheus-kube-prometheus-blackbox-exporter   ClusterIP   10.97.130.28     <none>        19115/TCP                    35m
+prometheus-kube-prometheus-operator            ClusterIP   10.99.39.207     <none>        8080/TCP                     35m
+prometheus-kube-prometheus-prometheus          ClusterIP   10.96.218.94     <none>        9090/TCP                     35m
+prometheus-kube-state-metrics                  ClusterIP   10.106.101.139   <none>        8080/TCP                     35m
+prometheus-node-exporter                       ClusterIP   10.104.57.79     <none>        9100/TCP                     35m
+prometheus-operated                            ClusterIP   None             <none>        9090/TCP                     34m
+```
+
+Get Grafana login password
+
+```shell
+$ kubectl get secrets grafana-grafana-operator-grafana-admin-credentials -n monitoring -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode
+ZQrnOovzxq0ckw==
+```
+
 
 ```shell
 $ curl -L https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.28.0/install.sh -o install.sh
@@ -263,3 +419,7 @@ ack-dynamodb-controller                    Community Operators   2m28s
 ack-memorydb-controller                    Community Operators   2m28s
 ...
 ```
+
+
+$ kubectl patch svc prometheus-k8s -n monitoring --type merge -p '{"spec":{"type": "NodePort"}}'
+service/prometheus-k8s patched
