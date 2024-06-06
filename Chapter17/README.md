@@ -241,3 +241,25 @@ Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "bitnami" chart repository
 Update Complete. ⎈Happy Helming!⎈
 ```
+
+```shell
+$ helm install prometheus bitnami/kube-prometheus
+```
+
+```shell
+$ curl -L https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.28.0/install.sh -o install.sh
+$ chmod +x install.sh
+$ ./install.sh v0.28.0
+
+
+$ kubectl get csv -A
+NAMESPACE   NAME            DISPLAY          VERSION   REPLACES   PHASE
+olm         packageserver   Package Server   0.28.0               Succeeded
+
+$ kubectl get packagemanifest -n olm
+NAME                                       CATALOG               AGE
+lightbend-console-operator                 Community Operators   2m28s
+ack-dynamodb-controller                    Community Operators   2m28s
+ack-memorydb-controller                    Community Operators   2m28s
+...
+```
