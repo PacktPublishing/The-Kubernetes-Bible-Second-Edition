@@ -1,14 +1,34 @@
-# nginx-with-init-container.yaml 
+# nginx-with-init-container.yaml
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: nginx-with-init-container
+  labels:
+    environment: prod
+    tier: frontend
 spec:
   restartPolicy: Never
+  volumes:
+    - name: website-volume
+      emptyDir: {}
   initContainers:
-    - name: my-init-container
-      image: debian
-      command: ["sleep", "15"]
+    - name: download-website
+      image: busybox
+      command:
+        - sh
+        - -c
+        - |
+          wget https://github.com/iamgini/website-demo-one-page/archive/refs/heads/main.zip -O /tmp/website.zip && \
+          mkdir /tmp/website && \
+          unzip /tmp/website.zip -d /tmp/website && \
+          cp -r /tmp/website/website-demo-one-page-main/* /usr/share/nginx/html
+      volumeMounts:
+        - name: website-volume
+          mountPath: /usr/share/nginx/html
   containers:
     - name: nginx-container
       image: nginx:latest
+      volumeMounts:
+        - name: website-volume
+          mountPath: /usr/share/nginx/html
