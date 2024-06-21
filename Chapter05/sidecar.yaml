@@ -1,0 +1,25 @@
+# sidecar.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sidecar
+spec:
+  containers:
+    - name: myapp
+      image: alpine:latest
+      command: ['sh', '-c', 'while true; do echo "$(date): logging" >> /opt/logs.txt; sleep 2; done']
+      volumeMounts:
+        - name: log-volume
+          mountPath: /opt
+  initContainers:
+    - name: logshipper
+      image: alpine:latest
+      restartPolicy: Always
+      command: ['sh', '-c', 'tail -F /opt/logs.txt']
+      volumeMounts:
+        - name: log-volume
+          mountPath: /opt
+
+  volumes:
+    - name: log-volume
+      emptyDir: {}

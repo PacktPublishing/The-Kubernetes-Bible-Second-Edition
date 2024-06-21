@@ -5,20 +5,22 @@ metadata:
   name: nginx-with-adapter
 spec:
   containers:
-  - name: nginx-container
-    image: nginx:latest
-    ports:
-    - containerPort: 80
-    volumeMounts:
-    - name: log-volume
-      mountPath: /var/log/nginx
-  - name: log-converter
-    image: log-converter-image:latest 
-    #to be replaced with the correct log collection agent image
-    
-    volumeMounts:
-    - name: log-volume
-      mountPath: /var/log/nginx
+    - name: nginx-container
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/nginx
+    - name: fluentd-adapter
+      image: fluent/fluentd:latest
+      volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/nginx
+      resources:
+        requests:
+          memory: "100Mi"
+          cpu: "50m"
   volumes:
-  - name: log-volume
-    emptyDir: {}
+    - name: log-volume
+      emptyDir: {}
