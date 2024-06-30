@@ -1,8 +1,8 @@
-# nginx-with-adapter.yaml
+# nginx-with-fluentd-sidecar.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-with-adapter
+  name: nginx-with-sidecar
 spec:
   containers:
     - name: nginx-container
@@ -12,15 +12,11 @@ spec:
       volumeMounts:
         - name: log-volume
           mountPath: /var/log/nginx
-    - name: fluentd-adapter
-      image: fluent/fluentd:latest
+    - name: fluentd-sidecar
+      image: fluent/fluentd:v1.17
       volumeMounts:
         - name: log-volume
           mountPath: /var/log/nginx
-      resources:
-        requests:
-          memory: "100Mi"
-          cpu: "50m"
   volumes:
     - name: log-volume
       emptyDir: {}

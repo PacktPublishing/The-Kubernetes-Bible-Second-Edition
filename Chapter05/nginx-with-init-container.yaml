@@ -13,6 +13,8 @@ spec:
     - name: website-volume
       emptyDir: {}
   initContainers:
+    # TODO make it as a loop and run every 30 second
+    # check page 50
     - name: download-website
       image: busybox
       command:

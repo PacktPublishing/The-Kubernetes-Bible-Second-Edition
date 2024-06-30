@@ -8,7 +8,7 @@ spec:
   initContainers:
     - name: my-init-container
       image: debian
-      command: ["sleep", "1115"]
+      command: ["sleep", "5"]
   containers:
     - name: nginx-container
       image: nginx:latest
