@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config-map
+  namespace: default
+data:
+  fluentd.conf: |
+    <source>
+      @type tail
+      path /var/log/nginx/*.log
+      pos_file /var/log/nginx/nginx.log.pos
+      tag nginx
+      <parse>
+        @type nginx
+      </parse>
+    </source>
+
+    <match nginx.**>
+      @type elasticsearch
+      host elastic.lab.example.com
+      port 9200
+      logstash_format true
+      logstash_prefix fluentd
+      logstash_dateformat %Y.%m.%d
+    </match>

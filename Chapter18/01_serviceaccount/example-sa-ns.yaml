@@ -1,0 +1,13 @@
+# example-sa-ns.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: example-ns
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: example-sa
+  namespace: example-ns

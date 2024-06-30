@@ -1,0 +1,14 @@
+# nginx-with-basic-init-container.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-init-container
+spec:
+  restartPolicy: Never
+  initContainers:
+    - name: my-init-container
+      image: debian
+      command: ["sleep", "5"]
+  containers:
+    - name: nginx-container
+      image: nginx:latest

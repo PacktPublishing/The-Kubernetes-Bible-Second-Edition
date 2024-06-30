@@ -1,0 +1,22 @@
+# nginx-with-fluentd-sidecar.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-sidecar
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/nginx
+    - name: fluentd-sidecar
+      image: fluent/fluentd:v1.17
+      volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/nginx
+  volumes:
+    - name: log-volume
+      emptyDir: {}

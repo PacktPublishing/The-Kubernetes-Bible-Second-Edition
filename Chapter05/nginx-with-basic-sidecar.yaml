@@ -1,4 +1,4 @@
-# nginx-with-sidecar.yaml
+# nginx-with-basic-sidecar.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -13,9 +13,9 @@ spec:
     - name: log-volume
       mountPath: /var/log/nginx
   - name: log-collector
-    image: log-collector-image:latest 
+    image: log-collector-image:latest
     #to be replaced with the correct log collection agent image
-    
+
     volumeMounts:
     - name: log-volume
       mountPath: /var/log/nginx
