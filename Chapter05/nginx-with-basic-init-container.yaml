@@ -1,4 +1,4 @@
-# nginx-with-init-container.yaml
+# nginx-with-basic-init-container.yaml
 apiVersion: v1
 kind: Pod
 metadata:

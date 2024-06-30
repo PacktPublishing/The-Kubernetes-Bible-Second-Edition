@@ -1,0 +1,23 @@
+# alpine-with-adapter.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-adapter
+spec:
+  containers:
+    - name: alpine-writer
+      image: alpine:latest
+      command: [ "sh", "-c", "i=1; while true; do echo \"$(date) - log $i\" >> /var/log/app/app.log; i=$((i+1)); sleep 5; done" ]
+      volumeMounts:
+        - name: log-volume
+          mountPath: /var/log/app
+      # adapter container
+    - name: log-adapter
+      image: alpine:latest
+      command: [ "sh", "-c", "while true; do cat /logs/app.log | sed 's/$/ PROCESSED/' > /logs/processed_app.log; cat /logs/processed_app.log; sleep 10; done" ]
+      volumeMounts:
+        - name: log-volume
+          mountPath: /logs
+  volumes:
+    - name: log-volume
+      emptyDir: {}
