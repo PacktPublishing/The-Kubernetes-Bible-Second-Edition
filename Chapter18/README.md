@@ -87,8 +87,8 @@ $ kubectl config view -o json | jq '.users[] | select(.name == "minikube")'
 {
   "name": "minikube",
   "user": {
-    "client-certificate": "/home/gmadappa/.minikube/profiles/minikube/client.crt",
-    "client-key": "/home/gmadappa/.minikube/profiles/minikube/client.key"
+    "client-certificate": "/home/iamgini/.minikube/profiles/minikube/client.crt",
+    "client-key": "/home/iamgini/.minikube/profiles/minikube/client.key"
   }
 }
 ```
