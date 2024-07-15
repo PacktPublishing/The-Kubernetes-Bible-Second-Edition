@@ -1,12 +1,13 @@
+# 02_rbac/read-pods-rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: read-pods
-  namespace: default
+  namespace: rbac-demo-ns
 subjects:
 - kind: ServiceAccount
   name: pod-logger
-  namespace: default
+  namespace: rbac-demo-ns
 roleRef:
   kind: Role
   name: pod-reader

@@ -1,0 +1,23 @@
+# 02_rbac/pod-logger-app.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-logger-app
+  namespace: rbac-demo-ns
+spec:
+  serviceAccountName: pod-logger
+  containers:
+    - name: logger
+      image: quay.io/iamgini/k8sutils:debian12
+      command:
+        - /bin/sh
+        - -c
+        - |
+          SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
+          TOKEN=$(cat ${SERVICEACCOUNT}/token)
+          while true
+          do
+            echo "Querying Kubernetes API Server for Pods in rbac-demo-ns namespace..."
+            curl --cacert $SERVICEACCOUNT/ca.crt --header "Authorization: Bearer $TOKEN" -X GET https://kubernetes.default.svc.cluster.local/api/v1/namespaces/rbac-demo-ns/pods
+            sleep 10
+          done

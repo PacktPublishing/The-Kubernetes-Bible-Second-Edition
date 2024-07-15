@@ -1,0 +1,6 @@
+# 02_rbac/rbac-demo-ns.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rbac-demo-ns
