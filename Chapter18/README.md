@@ -223,3 +223,24 @@ Delete RoleBinding and test again
 $ kubectl delete -n rbac-demo-ns rolebindings read-pods
 rolebinding.rbac.authorization.k8s.io "read-pods" deleted
 ```
+
+## Admission controllers
+
+```shell
+$ minikube ssh 'sudo grep -- '--enable-admission-plugins' /etc/kubernetes/manifests/kube-apiserver.yaml'
+    - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota
+```
+
+```shell
+$ kubectl apply -f pod-with-security-context.yaml
+pod/security-context-demo created
+```
+
+```shell
+$ kubectl exec -it security-context-demo -- /bin/sh
+~ $ id
+uid=1000 gid=1000 groups=1000
+~ $ touch /testfile
+touch: /testfile: Read-only file system
+~ $
+```

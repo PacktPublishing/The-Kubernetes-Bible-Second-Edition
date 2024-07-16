@@ -1,0 +1,14 @@
+# pod-with-security-context.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-context-demo
+spec:
+  containers:
+    - name: busybox-container
+      image: busybox:latest
+      command: ["sleep", "3600"]
+      securityContext:
+        runAsUser: 1000                # Run container processes as user ID 1000
+        runAsGroup: 1000               # Run container processes as group ID 1000
+        readOnlyRootFilesystem: true   # Mount the root filesystem as read-only
