@@ -1,4 +1,4 @@
-# 04_taints/nginx-deployment.yaml
+# 02_nodeselector/nginx-deployment-slow.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,12 +15,8 @@ spec:
         app: nginx
         environment: test
     spec:
-      tolerations:
-        - key: machine-check-exception
-          operator: Equal
-          value: memory
-          effect: NoExecute
-          tolerationSeconds: 60
+      nodeSelector:
+        node-type: slow
       containers:
         - name: nginx
           image: nginx:1.17

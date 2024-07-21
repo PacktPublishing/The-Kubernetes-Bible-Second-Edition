@@ -1,7 +1,8 @@
+# 02_nodeselector/nginx-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment-example
+  name: nginx-app
 spec:
   replicas: 5
   selector:
@@ -17,7 +18,7 @@ spec:
       nodeSelector:
         node-type: superfast
       containers:
-      - name: nginx
-        image: nginx:1.17
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: nginx:1.17
+          ports:
+            - containerPort: 80
