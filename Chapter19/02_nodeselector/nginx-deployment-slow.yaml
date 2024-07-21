@@ -1,0 +1,24 @@
+# 02_nodeselector/nginx-deployment-slow.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+      environment: test
+  template:
+    metadata:
+      labels:
+        app: nginx
+        environment: test
+    spec:
+      nodeSelector:
+        node-type: slow
+      containers:
+        - name: nginx
+          image: nginx:1.17
+          ports:
+            - containerPort: 80

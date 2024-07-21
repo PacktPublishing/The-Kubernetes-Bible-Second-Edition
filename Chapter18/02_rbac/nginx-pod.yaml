@@ -1,0 +1,10 @@
+# 02_rbac/nginx-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: rbac-demo-ns
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest

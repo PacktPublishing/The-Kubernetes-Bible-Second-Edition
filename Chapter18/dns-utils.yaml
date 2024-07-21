@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dnsutils
+  namespace: rbac-demo-ns
+spec:
+  containers:
+  - name: dnsutils
+    image: infoblox/dnstools:latest
+    command: ["sleep", "3600"]

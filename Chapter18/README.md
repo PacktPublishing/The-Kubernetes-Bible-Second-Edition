@@ -87,8 +87,8 @@ $ kubectl config view -o json | jq '.users[] | select(.name == "minikube")'
 {
   "name": "minikube",
   "user": {
-    "client-certificate": "/home/gmadappa/.minikube/profiles/minikube/client.crt",
-    "client-key": "/home/gmadappa/.minikube/profiles/minikube/client.key"
+    "client-certificate": "/home/iamgini/.minikube/profiles/minikube/client.crt",
+    "client-key": "/home/iamgini/.minikube/profiles/minikube/client.key"
   }
 }
 ```
@@ -141,4 +141,106 @@ $ kubectl auth whoami
 ATTRIBUTE   VALUE
 Username    iamgini
 Groups      [web1 frontend system:authenticated]
+```
+
+
+## RBAC
+
+```shell
+$ kubectl apply -f 02_rbac/rbac-demo-ns.yaml
+namespace/rbac-demo-ns created
+
+$ kubectl create -f 02_rbac/nginx-pod.yaml
+pod/nginx-pod created
+
+$ kubectl apply -f 02_rbac/pod-logger-serviceaccount.yaml
+serviceaccount/pod-logger created
+
+$ kubectl apply -f 02_rbac/pod-reader-role.yaml
+role.rbac.authorization.k8s.io/pod-reader created
+
+$ kubectl apply -f 02_rbac/pod-logger-app.yaml
+pod/pod-logger-app created
+
+$  kubectl get po -n rbac-demo-ns
+NAME             READY   STATUS    RESTARTS   AGE
+nginx-pod        1/1     Running   0          15m
+pod-logger-app   1/1     Running   0          9s
+
+$ kubectl exec -it -n rbac-demo-ns pod-logger-app -- bash
+root@pod-logger-app:/# ls -l /var/run/secrets/kubernetes.io/serviceaccount/
+total 0
+lrwxrwxrwx 1 root root 13 Jul 14 03:33 ca.crt -> ..data/ca.crt
+lrwxrwxrwx 1 root root 16 Jul 14 03:33 namespace -> ..data/namespace
+lrwxrwxrwx 1 root root 12 Jul 14 03:33 token -> ..data/token
+
+
+$ kubectl logs -n rbac-demo-ns pod-logger-app -f
+Querying Kubernetes API Server for Pods in default namespace...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   335  100   335    0     0  15678      0 --:--:-- --:--:-- --:--:-- 15952
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {},
+  "status": "Failure",
+  "message": "pods is forbidden: User \"system:serviceaccount:rbac-demo-ns:pod-logger\" cannot list resource \"pods\" in API group \"\" in the namespace \"kube-system\"",
+  "reason": "Forbidden",
+  "details": {
+    "kind": "pods"
+  },
+  "code": 403
+}
+
+$ kubectl apply -f 02_rbac/read-pods-rolebinding.yaml
+rolebinding.rbac.authorization.k8s.io/read-pods created
+
+
+$ kubectl logs -n rbac-demo-ns pod-logger-app -f
+...<removed for brevity>...
+Querying Kubernetes API Server for Pods in default namespace...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+{
+  "kind": "PodList",
+  "apiVersion": "v1",
+  "metadata": {
+    "resourceVersion": "4889"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "nginx-pod",
+        "namespace": "rbac-demo-ns",
+        "uid": "b62b2bdb-2677-4809-a134-9d6cfa07ecad",
+...<removed for brevity>...
+```
+
+Delete RoleBinding and test again
+
+```shell
+$ kubectl delete -n rbac-demo-ns rolebindings read-pods
+rolebinding.rbac.authorization.k8s.io "read-pods" deleted
+```
+
+## Admission controllers
+
+```shell
+$ minikube ssh 'sudo grep -- '--enable-admission-plugins' /etc/kubernetes/manifests/kube-apiserver.yaml'
+    - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota
+```
+
+```shell
+$ kubectl apply -f pod-with-security-context.yaml
+pod/security-context-demo created
+```
+
+```shell
+$ kubectl exec -it security-context-demo -- /bin/sh
+~ $ id
+uid=1000 gid=1000 groups=1000
+~ $ touch /testfile
+touch: /testfile: Read-only file system
+~ $
 ```
