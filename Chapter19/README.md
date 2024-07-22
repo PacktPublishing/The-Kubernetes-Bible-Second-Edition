@@ -213,4 +213,29 @@ nginx-app-84d755f746-zkbc6   Running   minikube-m03
 $ kubectl taint node minikube machine-check-exception-
 node/minikube untainted
 
-````
+$ kubectl rollout restart deployment nginx-app
+deployment.apps/nginx-app restarted
+
+$ kubectl get pods --namespace default --output=custom-columns="NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName"
+NAME                         STATUS    NODE
+nginx-app-5bdd957558-fj7bk   Running   minikube-m02
+nginx-app-5bdd957558-mrddn   Running   minikube-m03
+nginx-app-5bdd957558-mz2pz   Running   minikube-m02
+nginx-app-5bdd957558-pftz5   Running   minikube-m03
+nginx-app-5bdd957558-vm6k9   Running   minikube
+```
+
+```shell
+$ kubectl taint node minikube machine-check-exception=memory:NoSchedule
+node/minikube tainted
+$ kubectl taint node minikube machine-check-exception=memory:NoExecute
+node/minikube tainted
+
+$ kubectl get pods --namespace default --output=custom-columns="NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName"
+NAME                         STATUS    NODE
+nginx-app-5bdd957558-7n42p   Running   minikube-m03
+nginx-app-5bdd957558-fj7bk   Running   minikube-m02
+nginx-app-5bdd957558-mrddn   Running   minikube-m03
+nginx-app-5bdd957558-mz2pz   Running   minikube-m02
+nginx-app-5bdd957558-pftz5   Running   minikube-m03
+```
