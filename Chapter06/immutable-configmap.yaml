@@ -1,0 +1,10 @@
+# immutable-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immutable-configmap
+data:
+  color: "blue"
+  version: "1.0"
+  environment: "prod"
+immutable: true
