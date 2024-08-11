@@ -119,3 +119,138 @@ Events:
   ----     ------            ----                 ----               -------
   Warning  FailedScheduling  23m (x21 over 121m)  default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {machine-check-exception: memory}, 2 Insufficient cpu. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
 ```
+
+## VerticalPodAutoscaler (VPA)
+
+
+```shell
+$ minikube start --feature-gates=InPlacePodVerticalScaling=true
+```
+
+```shell
+  - command:
+    - kube-apiserver
+   ...<removed for brevity>...
+    - --feature-gates=InPlacePodVerticalScaling=true
+```
+
+```shell
+$ kubectl get pods -n kube-system | grep vpa
+vpa-admission-controller-5b64b4f4c4-vsn9j   1/1     Running   0             5m34s
+vpa-recommender-54c76554b5-m7wnk            1/1     Running   0             5m34s
+vpa-updater-7d5f6fbf9b-rkwlb                1/1     Running   0             5m34s
+```
+
+```shell
+$ minikube addons enable metrics-server
+```
+
+```shell
+$ kubectl apply -f 02_vpa/vpa-demo-ns.yaml
+namespace/vpa-demo created
+
+$ kubectl apply -f 02_vpa/hamster-deployment.yaml
+deployment.apps/hamster created
+```
+
+```shell
+$ kubectl get po -n vpa-demo
+NAME                      READY   STATUS    RESTARTS   AGE
+hamster-7fb7dbff7-hmzt5   1/1     Running   0          8s
+hamster-7fb7dbff7-lbk9f   1/1     Running   0          8s
+hamster-7fb7dbff7-ql6gd   1/1     Running   0          8s
+hamster-7fb7dbff7-qmxd8   1/1     Running   0          8s
+hamster-7fb7dbff7-qtrpp   1/1     Running   0          8s
+
+$ kubectl top pod -n vpa-demo
+NAME                      CPU(cores)   MEMORY(bytes)
+hamster-7fb7dbff7-hmzt5   457m         0Mi
+hamster-7fb7dbff7-lbk9f   489m         0Mi
+hamster-7fb7dbff7-ql6gd   459m         0Mi
+hamster-7fb7dbff7-qmxd8   453m         0Mi
+hamster-7fb7dbff7-qtrpp   451m         0Mi
+```
+
+```shell
+$ kubectl apply -f 02_vpa/hamster-vpa.yaml
+verticalpodautoscaler.autoscaling.k8s.io/hamster-vpa created
+```
+
+```shell
+$ kubectl describe vpa hamster-vpa -n vpa-demo
+Name:         hamster-vpa
+Namespace:    vpa-demo
+...
+Status:
+  Conditions:
+    Last Transition Time:  2024-08-11T09:20:44Z
+    Status:                True
+    Type:                  RecommendationProvided
+  Recommendation:
+    Container Recommendations:
+      Container Name:  hamster
+      Lower Bound:
+        Cpu:     461m
+        Memory:  262144k
+      Target:
+        Cpu:     587m
+        Memory:  262144k
+      Uncapped Target:
+        Cpu:     587m
+        Memory:  262144k
+      Upper Bound:
+        Cpu:     1
+        Memory:  500Mi
+Events:          <none>
+```
+
+Update mode
+
+```yaml
+# 02_vpa/hamster-vpa.yaml
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: hamster-vpa
+  namespace: vpa-demo
+spec:
+...
+  updatePolicy:
+    updateMode: Auto
+...
+
+
+```shell
+$ kubectl apply -f 02_vpa/hamster-vpa.yaml
+verticalpodautoscaler.autoscaling.k8s.io/hamster-vpa configured
+```
+
+```shell
+$ kubectl get po -n vpa-demo -w
+NAME                      READY   STATUS              RESTARTS   AGE
+hamster-7fb7dbff7-24p89   0/1     ContainerCreating   0          2s
+hamster-7fb7dbff7-6nz8f   0/1     ContainerCreating   0          2s
+hamster-7fb7dbff7-hmzt5   1/1     Running             0          20m
+hamster-7fb7dbff7-lbk9f   1/1     Running             0          20m
+hamster-7fb7dbff7-ql6gd   1/1     Terminating         0          20m
+hamster-7fb7dbff7-qmxd8   1/1     Terminating         0          20m
+hamster-7fb7dbff7-qtrpp   1/1     Running             0          20m
+hamster-7fb7dbff7-24p89   1/1     Running             0          2s
+hamster-7fb7dbff7-6nz8f   1/1     Running             0          2s
+```
+
+```shell
+$ kubectl describe pod hamster-7fb7dbff7-24p89 -n vpa-demo
+...
+Annotations:      ...<removed for brevity>...
+                  vpaObservedContainers: hamster
+                  vpaUpdates: Pod resources updated by hamster-vpa: container 0: memory request, cpu request
+...
+Containers:
+  hamster:
+    ...
+    Requests:
+      cpu:        587m
+      memory:     262144k
+...<removed for brevity>...
+```
