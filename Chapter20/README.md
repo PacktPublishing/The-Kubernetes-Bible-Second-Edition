@@ -254,3 +254,8 @@ Containers:
       memory:     262144k
 ...<removed for brevity>...
 ```
+
+## HPA
+
+
+quay.io/iamgini/one-page-web:1.0

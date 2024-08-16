@@ -1,0 +1,14 @@
+FROM nginx:alpine
+
+# Download, unzip, and copy files to the Nginx HTML directory
+RUN wget https://github.com/iamgini/website-demo-one-page/archive/refs/heads/k8sbook.zip -O /tmp/website.zip && \
+    mkdir /tmp/website && \
+    unzip /tmp/website.zip -d /tmp/website && \
+    cp -r /tmp/website/website-demo-one-page-k8sbook/* /usr/share/nginx/html && \
+    rm -rf /tmp/website /tmp/website.zip
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
