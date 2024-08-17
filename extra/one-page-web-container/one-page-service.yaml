@@ -1,0 +1,13 @@
+# hpa/one-page-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: one-page-web
+  namespace: hpa-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: onepage
+  ports:
+    - port: 8080      # Port exposed within the cluster
+      targetPort: 80  # Port on the pods

@@ -1,0 +1,8 @@
+# hpa/hpa-demo-ns.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    project: hpa-demo
+  name: hpa-demo

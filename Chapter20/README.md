@@ -95,7 +95,7 @@ Update the request and limits.
 ```
 
 ```shell
-$ kubectl apply -f 01_resource-requests-and-limits/nginx-deployment.yaml
+$ kubectl apply -f resource-limit/nginx-deployment.yaml
 deployment.apps/nginx-deployment-example configured
 ```
 
@@ -146,10 +146,10 @@ $ minikube addons enable metrics-server
 ```
 
 ```shell
-$ kubectl apply -f 02_vpa/vpa-demo-ns.yaml
+$ kubectl apply -f vpa/vpa-demo-ns.yaml
 namespace/vpa-demo created
 
-$ kubectl apply -f 02_vpa/hamster-deployment.yaml
+$ kubectl apply -f vpa/hamster-deployment.yaml
 deployment.apps/hamster created
 ```
 
@@ -172,7 +172,7 @@ hamster-7fb7dbff7-qtrpp   451m         0Mi
 ```
 
 ```shell
-$ kubectl apply -f 02_vpa/hamster-vpa.yaml
+$ kubectl apply -f vpa/hamster-vpa.yaml
 verticalpodautoscaler.autoscaling.k8s.io/hamster-vpa created
 ```
 
@@ -207,7 +207,7 @@ Events:          <none>
 Update mode
 
 ```yaml
-# 02_vpa/hamster-vpa.yaml
+# vpa/hamster-vpa.yaml
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
@@ -221,7 +221,7 @@ spec:
 
 
 ```shell
-$ kubectl apply -f 02_vpa/hamster-vpa.yaml
+$ kubectl apply -f vpa/hamster-vpa.yaml
 verticalpodautoscaler.autoscaling.k8s.io/hamster-vpa configured
 ```
 
@@ -257,5 +257,95 @@ Containers:
 
 ## HPA
 
+```shell
+$ kubectl apply -f hpa/hpa-demo-ns.yaml
+namespace/hpa-demo created
 
-quay.io/iamgini/one-page-web:1.0
+$ kubectl apply -f hpa/todo-deployment.yaml
+deployment.apps/todo-app created
+
+$ kubectl get po -n hpa-demo
+NAME                        READY   STATUS    RESTARTS   AGE
+todo-app-5cfb496d77-l6r69   1/1     Running   0          8s
+
+$ kubectl apply -f hpa/todo-service.yaml
+service/todo-app created
+
+$ kubectl get svc -n hpa-demo
+NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+todo-app   ClusterIP   10.96.171.71   <none>        8081/TCP   15s
+
+$ kubectl port-forward svc/todo-app -n hpa-demo 8081:8081
+Forwarding from 127.0.0.1:8081 -> 3000
+Forwarding from [::1]:8081 -> 3000
+
+```
+
+### Auto scale
+
+**Get load test tool**
+
+You can use any available load testing/benchmarking tools but we are using a simple tool called **hey** in this workshop.
+
+- Download the hey package for your operating system.
+- Set executable permission and copy the file to a executable path (eg: ln -s ~/Downloads/hey_linux_amd64 ~/.local/bin/)
+
+Check [**hey**](https://github.com/rakyll/hey) repo for more details.
+
+
+```shell
+$ kubectl apply -f hpa/todo-hpa.yaml
+horizontalpodautoscaler.autoscaling/todo-hpa created
+
+$ kubectl get hpa -n hpa-demo
+NAME       REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+todo-hpa   Deployment/todo-app   cpu: <unknown>/80%   1         5         0          6s
+
+
+$ kubectl port-forward svc/todo-app -n hpa-demo 8081:8081
+Forwarding from 127.0.0.1:8081 -> 3000
+Forwarding from [::1]:8081 -> 3000
+
+$ hey -z 4m -c 25 http://localhost:8081
+
+$ kubectl get po -n hpa-demo
+NAME                        READY   STATUS    RESTARTS   AGE
+todo-app-5cfb496d77-5kc27   1/1     Running   0          2m9s
+todo-app-5cfb496d77-l6r69   1/1     Running   0          11m
+todo-app-5cfb496d77-pb7tx   1/1     Running   0          2m9s
+```
+
+```shell
+$ watch 'kubectl get po -n hpa-demo;kubectl top pods -n hpa-demo'
+Every 2.0s: kubectl get po -n hpa-demo;kubectl top pods -n hpa-demo
+
+NAME                        READY   STATUS    RESTARTS   AGE
+todo-app-5cfb496d77-5kc27   1/1     Running   0          76s
+todo-app-5cfb496d77-l6r69   1/1     Running   0          10m
+todo-app-5cfb496d77-pb7tx   1/1     Running   0          76s
+NAME                        CPU(cores)   MEMORY(bytes)
+todo-app-5cfb496d77-5kc27   10m          14Mi
+todo-app-5cfb496d77-l6r69   100m         48Mi
+todo-app-5cfb496d77-pb7tx   7m           14Mi
+```
+
+```shell
+$ kubectl describe deployments.apps todo-app -n hpa-demo
+Name:                   todo-app
+...<removed for brevity>...
+Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+StrategyType:           RollingUpdate
+...<removed for brevity>...
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  16m   deployment-controller  Scaled up replica set todo-app-749854577d to 1
+  Normal  ScalingReplicaSet  13m   deployment-controller  Scaled up replica set todo-app-5cfb496d77 to 1
+  Normal  ScalingReplicaSet  13m   deployment-controller  Scaled down replica set todo-app-749854577d to 0 from 1
+  Normal  ScalingReplicaSet  4m9s  deployment-controller  Scaled up replica set todo-app-5cfb496d77 to 3 from 1
+```
+
+```shell
+$ kubectl delete namespaces hpa-demo
+namespace "hpa-demo" deleted
+```

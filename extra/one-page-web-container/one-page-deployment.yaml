@@ -1,0 +1,29 @@
+---
+# hpa/one-page-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: one-page-web
+  namespace: hpa-demo
+spec:
+  replicas: 1  # Adjust as needed
+  selector:
+    matchLabels:
+      app: onepage
+  template:
+    metadata:
+      labels:
+        app: onepage
+    spec:
+      containers:
+        - name: onepageweb
+          image: quay.io/iamgini/one-page-web:1.0
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "10Mi"   # Request 50 MiB of memory
+              cpu: "10m"      # Request 0.05 CPU core
+            limits:
+              memory: "20Mi"  # Request 100 MiB of memory
+              cpu: "20m"      # Request 0.1 CPU core

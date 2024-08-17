@@ -1,4 +1,4 @@
-# 02_vpa/vpa-demo-ns.yaml
+# vpa/vpa-demo-ns.yaml
 ---
 apiVersion: v1
 kind: Namespace

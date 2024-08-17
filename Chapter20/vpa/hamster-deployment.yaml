@@ -1,4 +1,4 @@
-# 02_vpa/hamster-deployment.yaml
+# vpa/hamster-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
