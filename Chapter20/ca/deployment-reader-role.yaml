@@ -1,7 +1,8 @@
+# ca/deployment-reader-role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: default
+  namespace: ca-demo
   name: deployment-reader
 rules:
 - apiGroups: ["apps"]
