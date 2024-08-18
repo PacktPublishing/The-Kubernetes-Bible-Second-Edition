@@ -1,6 +1,5 @@
 # Autoscaling Kubernetes Pods and Nodes
 
-
 ```shell
 $ kubectl describe node minikube-m03
 Name:               minikube-m03
@@ -348,4 +347,61 @@ Events:
 ```shell
 $ kubectl delete namespaces hpa-demo
 namespace "hpa-demo" deleted
+```
+
+## Cluster Autoscaling
+
+### GKE
+
+
+Preparations
+
+```shell
+$ gcloud config set compute/region us-central1-a
+```
+
+```shell
+$ gcloud container clusters create k8sforbeginners --num-nodes=2 --zone=us-central1-a --enable-autoscaling --min-nodes=2 --max-nodes=10
+
+$ gcloud container clusters create k8sbible \
+  --enable-autoscaling \
+  --num-nodes 2 \
+  --min-nodes 2 \
+  --max-nodes 10 \
+  --region=us-central1-a
+...<removed for brevity>...
+Creating cluster k8sbible in us-central1-a... Cluster is being health-checked (master is healthy)...done.
+Created [https://container.googleapis.com/v1/projects/k8sbible-project/zones/us-central1-a/clusters/k8sbible].
+To inspect the contents of your cluster, go to: https://console.cloud.google.com/kubernetes/workload_/gcloud/us-central1-a/k8sbible?project=k8sbible-project
+kubeconfig entry generated for k8sbible.
+NAME      LOCATION       MASTER_VERSION      MASTER_IP      MACHINE_TYPE  NODE_VERSION        NUM_NODES  STATUS
+k8sbible  us-central1-a  1.29.7-gke.1008000  <removed>      e2-medium     1.29.7-gke.1008000  3          RUNNING
+```
+
+gcloud container clusters create k8sdemo \
+  --enable-autoscaling \
+  --num-nodes 2 \
+  --min-nodes 2 \
+  --max-nodes 10 \
+  --region=us-central1-a
+
+Verify
+
+```shell
+$ gcloud container node-pools describe default-pool --cluster=k8sdemo |grep autoscaling -A 1
+autoscaling:
+  enabled: true
+```
+### AKS
+
+```shell
+$ az aks create --resource-group k8sforbeginners-rg \
+  --name k8sforbeginners-aks \
+  --node-count 1 \
+  --enable-cluster-autoscaler \
+  --min-count 1 \
+  --max-count 3 \
+  --vm-set-type VirtualMachineScaleSets \
+  --load-balancer-sku standard \
+  --generate-ssh-keys
 ```

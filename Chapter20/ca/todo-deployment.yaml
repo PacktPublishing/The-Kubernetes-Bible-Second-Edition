@@ -1,0 +1,29 @@
+---
+# ca/todo-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: ca-demo
+spec:
+  replicas: 1  # Adjust as needed
+  selector:
+    matchLabels:
+      app: todo
+  template:
+    metadata:
+      labels:
+        app: todo
+    spec:
+      containers:
+        - name: todoapp
+          image: quay.io/iamgini/todo-app:2.0
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "50Mi"   # Request 50 MiB of memory
+              cpu: "50m"      # Request 0.05 CPU core
+            limits:
+              memory: "100Mi"  # Request 100 MiB of memory
+              cpu: "100m"      # Request 0.1 CPU core
