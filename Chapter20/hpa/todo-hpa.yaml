@@ -10,7 +10,7 @@ spec:
     kind: Deployment
     name: todo-app
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 2
   metrics:
     - resource:
         name: cpu

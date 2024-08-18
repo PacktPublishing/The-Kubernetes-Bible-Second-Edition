@@ -377,14 +377,6 @@ kubeconfig entry generated for k8sbible.
 NAME      LOCATION       MASTER_VERSION      MASTER_IP      MACHINE_TYPE  NODE_VERSION        NUM_NODES  STATUS
 k8sbible  us-central1-a  1.29.7-gke.1008000  <removed>      e2-medium     1.29.7-gke.1008000  3          RUNNING
 ```
-
-gcloud container clusters create k8sdemo \
-  --enable-autoscaling \
-  --num-nodes 2 \
-  --min-nodes 2 \
-  --max-nodes 10 \
-  --region=us-central1-a
-
 Verify
 
 ```shell
@@ -404,4 +396,71 @@ $ az aks create --resource-group k8sforbeginners-rg \
   --vm-set-type VirtualMachineScaleSets \
   --load-balancer-sku standard \
   --generate-ssh-keys
+```
+
+### Implement CA
+
+```shell
+$ kubectl get nodes -o custom-columns=NAME:.metadata.name,CPU_ALLOCATABLE:.status.allocatable.cpu,MEMORY_ALLOCATABLE:.status.allocatable.memory
+NAME                                     CPU_ALLOCATABLE   MEMORY_ALLOCATABLE
+gke-k8sdemo-default-pool-1bf4f185-6422   940m              2873304Ki
+gke-k8sdemo-default-pool-1bf4f185-csv0   940m              2873312Ki
+```
+
+
+```shell
+$ kubectl apply -f ca/
+namespace/ca-demo created
+role.rbac.authorization.k8s.io/deployment-reader created
+deployment.apps/elastic-hamster created
+horizontalpodautoscaler.autoscaling/elastic-hamster-hpa created
+serviceaccount/elastic-hamster created
+rolebinding.rbac.authorization.k8s.io/read-deployments created
+```
+
+```shell
+$ kubectl top pod -n ca-demo
+NAME                              CPU(cores)   MEMORY(bytes)
+elastic-hamster-87d4db7fd-59lcd   1292m        65Mi
+elastic-hamster-87d4db7fd-9kzhp   1272m        67Mi
+elastic-hamster-87d4db7fd-cwzs7   1280m        67Mi
+elastic-hamster-87d4db7fd-fvlm7   1262m        66Mi
+elastic-hamster-87d4db7fd-g5xvx   1302m        66Mi
+elastic-hamster-87d4db7fd-kf7kx   1310m        66Mi
+elastic-hamster-87d4db7fd-sbnzc   1262m        67Mi
+elastic-hamster-87d4db7fd-twb86   1300m        67Mi
+```
+
+```shell
+$  kubectl top nodes
+NAME                                     CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+gke-k8sdemo-default-pool-1bf4f185-6422   196m         20%    1220Mi          43%
+gke-k8sdemo-default-pool-1bf4f185-csv0   199m         21%    1139Mi          40%
+gke-k8sdemo-default-pool-1bf4f185-fcsd   751m         79%    935Mi           33%
+gke-k8sdemo-default-pool-1bf4f185-frq6   731m         77%    879Mi           31%
+gke-k8sdemo-default-pool-1bf4f185-h8hw   742m         78%    846Mi           30%
+gke-k8sdemo-default-pool-1bf4f185-j99r   733m         77%    923Mi           32%
+gke-k8sdemo-default-pool-1bf4f185-k6xq   741m         78%    986Mi           35%
+gke-k8sdemo-default-pool-1bf4f185-vq55   732m         77%    940Mi           33%
+gke-k8sdemo-default-pool-1bf4f185-wh66   732m         77%    819Mi           29%
+gke-k8sdemo-default-pool-1bf4f185-xdpr   742m         78%    921Mi           32%
+```
+
+Scale down
+
+```shell
+$ kubectl patch hpa elastic-hamster-hpa -n ca-demo -p '{"spec": {"maxReplicas": 2}}'
+horizontalpodautoscaler.autoscaling/elastic-hamster-hpa patched
+```
+
+```shell
+$ kubectl get pod -n ca-demo
+NAME                              READY   STATUS    RESTARTS   AGE
+elastic-hamster-87d4db7fd-2qghf   1/1     Running   0          20m
+elastic-hamster-87d4db7fd-mdvpx   1/1     Running   0          19m
+
+$ kubectl get nodes
+NAME                                     STATUS   ROLES    AGE    VERSION
+gke-k8sdemo-default-pool-1bf4f185-6422   Ready    <none>   145m   v1.29.7-gke.1008000
+gke-k8sdemo-default-pool-1bf4f185-csv0   Ready    <none>   145m   v1.29.7-gke.1008000
 ```

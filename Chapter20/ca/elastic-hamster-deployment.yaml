@@ -1,3 +1,4 @@
+# ca/elastic-hamster-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,7 +24,7 @@ spec:
             memory: 50Mi
         env:
         - name: TOTAL_HAMSTER_USAGE
-          value: "7.0"
+          value: "1.0"
         command:
         - /bin/sh
         - -c
