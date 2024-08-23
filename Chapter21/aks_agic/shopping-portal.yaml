@@ -1,0 +1,62 @@
+# aks-agic/shopping-portal.yaml
+
+---
+# shopping configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopping-configmap
+  namespace: agic-demo
+data:
+  color: lightgreen
+  portal: shopping
+
+---
+# shopping Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopping
+  namespace: agic-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopping
+  template:
+    metadata:
+      labels:
+        app: shopping
+    spec:
+      containers:
+        - name: shopping
+          image: quay.io/iamgini/k8sbible-portal:1.1
+          env:
+            - name: COLOR
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-configmap
+                  key: color
+            - name: PORTAL
+              valueFrom:
+                configMapKeyRef:
+                  name: shopping-configmap
+                  key: portal
+          ports:
+            - containerPort: 5000
+
+---
+# shopping service
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopping-service
+  namespace: agic-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: shopping
+  ports:
+    - port: 8080      # Port exposed within the cluster
+      targetPort: 5000  # Port on the pods
+      protocol: TCP   # Protocol

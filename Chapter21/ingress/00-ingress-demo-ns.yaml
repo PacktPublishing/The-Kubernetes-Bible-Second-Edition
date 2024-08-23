@@ -1,4 +1,4 @@
-# ingress/ingress-demo-ns.yaml
+# ingress/00-ingress-demo-ns.yaml
 ---
 apiVersion: v1
 kind: Namespace
