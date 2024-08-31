@@ -1,0 +1,21 @@
+# gateway-api/httproute.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: dev-httproute
+  namespace: gateway-api-demo
+spec:
+  parentRefs:
+    - name: dev-cluster-gateway
+      kind: Gateway
+      namespace: gateway-api-demo
+  hostnames:
+    - "k8sbible.local"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /video
+      backendRefs:
+        - name: video-service
+          port: 80

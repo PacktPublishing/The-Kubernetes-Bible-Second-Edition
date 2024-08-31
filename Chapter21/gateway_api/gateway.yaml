@@ -1,0 +1,12 @@
+# gateway_api/gateway.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: dev-gateway
+  namespace: gateway-api-demo
+spec:
+  gatewayClassName: dev-cluster-gateway
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80

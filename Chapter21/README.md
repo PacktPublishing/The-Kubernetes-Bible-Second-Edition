@@ -74,12 +74,13 @@ $ kubectl get ingress
 ## IngressClass
 
 ```shell
- kubectl get IngressClass -o yaml
+$ kubectl get IngressClass -o yaml
 apiVersion: v1
 items:
 - apiVersion: networking.k8s.io/v1
   kind: IngressClass
   metadata:
+    name: nginx
     annotations:
       ingressclass.kubernetes.io/is-default-class: "true"
       kubectl.kubernetes.io/last-applied-configuration: |
@@ -98,4 +99,90 @@ items:
 kind: List
 metadata:
   resourceVersion: ""
+```
+
+
+```shell
+$ kubectl get ingress
+NAME              CLASS    HOSTS   ADDRESS         PORTS   AGE
+example-ingress   <none>   *       52.191.222.39   80      36m
+```
+
+## etcd
+
+```shell
+$ ETCDCTL_API=3 etcdctl \
+  --endpoints=[https://127.0.0.1:2379] \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key \
+  snapshot save /tmp/snapshot-pre-patch.db
+
+$ etcdutl --write-out=table snapshot status snapshot.db
+```
+
+## Troubleshooting
+
+```shell
+$ kubectl apply -f troubleshooting/video-portal.yaml
+namespace/trouble-demo created
+configmap/video-configmap created
+deployment.apps/video created
+service/video-service created
+
+$ kubectl debug -it pod/video-7d945d8c9f-wkxc5 --image=quay.io/iamgini/k8sutils:debian12 -c k8sutils -n ingress-demo
+
+root@video-7d945d8c9f-wkxc5:/# nslookup video-service
+Server:         10.96.0.10
+Address:        10.96.0.10#53
+
+Name:   video-service.ingress-demo.svc.cluster.local
+Address: 10.109.3.177
+
+root@video-7d945d8c9f-wkxc5:/# curl http://video-service:8080
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Welcome</title>
+      <style>
+        body {
+          background-color: yellow;
+          text-align: center;
+...<removed for brevity>...
+```
+
+## Logs and Events
+
+```shell
+$ kubectl get events
+LAST SEEN   TYPE      REASON                    OBJECT                              MESSAGE
+39m         Normal    CIDRAssignmentFailed      node/example-node                   Node example-node status is now: CIDRAssignmentFailed
+39m         Normal    RegisteredNode            node/example-node                   Node example-node event: Registered Node example-node in Controller
+38m         Normal    RemovingNode              node/example-node                   Node example-node event: Removing Node example-node from Controller
+41m         Normal    Starting                  node/minikube                       Starting kubelet.
+41m         Normal    NodeHasSufficientMemory   node/minikube                       Node minikube status is now: NodeHasSufficientMemory
+41m         Normal    NodeHasNoDiskPressure     node/minikube                       Node minikube status is now: NodeHasNoDiskPressure
+41m         Normal    NodeHasSufficientPID      node/minikube                       Node minikube status is now: NodeHasSufficientPID
+41m         Normal    NodeAllocatableEnforced   node/minikube                       Updated Node Allocatable limit across pods
+41m         Normal    Starting                  node/minikube                       Starting kubelet.
+41m         Normal    NodeAllocatableEnforced   node/minikube                       Updated Node Allocatable limit across pods
+41m         Normal    NodeHasSufficientMemory   node/minikube                       Node minikube status is now: NodeHasSufficientMemory
+41m         Normal    NodeHasNoDiskPressure     node/minikube                       Node minikube status is now: NodeHasNoDiskPressure
+41m         Normal    NodeHasSufficientPID      node/minikube                       Node minikube status is now: NodeHasSufficientPID
+41m         Normal    NodeReady                 node/minikube                       Node minikube status is now: NodeReady
+41m         Normal    RegisteredNode            node/minikube                       Node minikube event: Registered Node minikube in Controller
+41m         Normal    Starting                  node/minikube
+24s         Normal    Starting                  node/minikube                       Starting kubelet.
+24s         Normal    NodeHasSufficientMemory   node/minikube                       Node minikube status is now: NodeHasSufficientMemory
+24s         Normal    NodeHasNoDiskPressure     node/minikube                       Node minikube status is now: NodeHasNoDiskPressure
+24s         Normal    NodeHasSufficientPID      node/minikube                       Node minikube status is now: NodeHasSufficientPID
+24s         Normal    NodeAllocatableEnforced   node/minikube                       Updated Node Allocatable limit across pods
+19s         Normal    Starting                  node/minikube
+17s         Normal    RegisteredNode            node/minikube                       Node minikube event: Registered Node minikube in Controller
+36m         Normal    Provisioning              persistentvolumeclaim/pvc-example   External provisioner is provisioning volume for claim "default/pvc-example"
+36m         Normal    ExternalProvisioning      persistentvolumeclaim/pvc-example   Waiting for a volume to be created either by the external provisioner 'k8s.io/minikube-hostpath' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+36m         Normal    ProvisioningSucceeded     persistentvolumeclaim/pvc-example   Successfully provisioned volume pvc-1a16fb6b-d9d2-4131-95be-be6d34c65277
+29m         Warning   ProvisioningFailed        persistentvolumeclaim/pvc-example   storageclass.storage.k8s.io "standard-gold" not found
+2s          Warning   ProvisioningFailed        persistentvolumeclaim/pvc-example   storageclass.storage.k8s.io "standard-gold" not found
 ```

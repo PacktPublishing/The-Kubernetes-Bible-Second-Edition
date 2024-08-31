@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: video
+  template:
+    metadata:
+      labels:
+        app: video
+    spec:
+      containers:
+        - name: video
+          image: quay.io/iamgini/k8sbible-portal:1.1
+          resources:
+            requests:
+              memory: "16Gi"
+              cpu: "4"
+          env:
+            - name: COLOR
+              valueFrom:
+                configMapKeyRef:
+                  name: video-configmap
+                  key: color
+            - name: PORTAL
+              valueFrom:
+                configMapKeyRef:
+                  name: video-configmap
+                  key: portal
+          ports:
+            - containerPort: 5000
