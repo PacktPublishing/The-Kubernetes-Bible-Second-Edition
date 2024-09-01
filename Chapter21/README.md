@@ -186,3 +186,29 @@ LAST SEEN   TYPE      REASON                    OBJECT                          
 29m         Warning   ProvisioningFailed        persistentvolumeclaim/pvc-example   storageclass.storage.k8s.io "standard-gold" not found
 2s          Warning   ProvisioningFailed        persistentvolumeclaim/pvc-example   storageclass.storage.k8s.io "standard-gold" not found
 ```
+## kubectl exec
+
+```shell
+$ kubectl get po -n trouble-ns
+NAME                   READY   STATUS    RESTARTS   AGE
+blog-675df44d5-gkrt2   1/1     Running   0          29m
+$ kubectl exec -it blog-675df44d5-gkrt2 -n trouble-ns -- /bin/bash
+root@blog-675df44d5-gkrt2:/app# whoami;hostname;uptime
+root
+blog-675df44d5-gkrt2
+ 14:36:03 up 10:19,  0 user,  load average: 0.17, 0.07, 0.69
+root@blog-675df44d5-gkrt2:/app#
+```
+
+```shell
+$ kubectl cp troubles/test.txt blog-675df44d5-gkrt2:/app/test.txt -n trouble-ns
+$ kubectl exec -it blog-675df44d5-gkrt2 -n trouble-ns -- ls -l /app
+total 8
+-rw-r--r-- 1 root root 902 Aug 20 16:52 app.py
+-rw-r--r-- 1 1000 1000  20 Aug 31 14:42 test.txt
+```
+
+```shell
+$ sudo crictl ps |grep api
+3f4bd6fc0b235       604f5db92eaa8       11 hours ago        Running             kube-apiserver            0                   c744e19d03d6c       kube-apiserver-minikube
+```

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: RoleBinding
+metadata:
+  name: example-rolebinding
+roleRef:
+  kind: Role
+  name: example-role
+subjects:
+  - kind: User
+    name: unauthorized-user
