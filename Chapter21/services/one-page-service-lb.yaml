@@ -1,0 +1,14 @@
+# services/one-page-service-lb.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: one-page-lb
+  namespace: svc-demo
+spec:
+  type: LoadBalancer
+  selector:
+    app: onepage
+  ports:
+    - port: 8080      # Port exposed within the cluster
+      targetPort: 80  # Port on the pods
+      protocol: TCP   # Protocol

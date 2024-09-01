@@ -1,0 +1,61 @@
+# ingress/blog-portal.yaml
+---
+# blog configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-configmap
+  namespace: ingress-demo
+data:
+  color: gray
+  portal: blog
+
+---
+# blog Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+  namespace: ingress-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      containers:
+        - name: blog
+          image: quay.io/iamgini/k8sbible-portal:1.1
+          env:
+            - name: COLOR
+              valueFrom:
+                configMapKeyRef:
+                  name: blog-configmap
+                  key: color
+            - name: PORTAL
+              valueFrom:
+                configMapKeyRef:
+                  name: blog-configmap
+                  key: portal
+          ports:
+            - containerPort: 5000
+
+---
+# blog service
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-service
+  namespace: ingress-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: blog
+  ports:
+    - port: 8080      # Port exposed within the cluster
+      targetPort: 5000  # Port on the pods
+      protocol: TCP   # Protocol

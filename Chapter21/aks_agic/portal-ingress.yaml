@@ -1,0 +1,33 @@
+# aks-agic/portal-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portal-ingress
+  namespace: agic-demo
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+    - host: k8sbible.local
+      http:
+        paths:
+          - path: /video
+            pathType: Prefix
+            backend:
+              service:
+                name: video-service
+                port:
+                  number: 8080
+          - path: /shopping
+            pathType: Prefix
+            backend:
+              service:
+                name: shopping-service
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blog-service
+                port:
+                  number: 8080

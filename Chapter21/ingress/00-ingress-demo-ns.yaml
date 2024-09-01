@@ -1,0 +1,8 @@
+# ingress/00-ingress-demo-ns.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    project: ingress-demo
+  name: ingress-demo
