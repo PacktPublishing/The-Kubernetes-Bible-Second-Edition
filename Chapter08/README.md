@@ -35,7 +35,7 @@ custom-ns   Active   21s
 ```
 
 ```shell
-$ kubectl create -f custom-ns-2.yaml
+$ kubectl apply -f custom-ns-2.yaml
 namespace/custom-ns-2 created
 ```
 
@@ -61,7 +61,7 @@ pod/nginx created
 $ kubectl create configmap configmap-custom-ns --from-literal=Lorem=Ipsum -n custom-ns
 configmap/configmap-custom-ns created
 
-$ kubectl create -f pod-in-namespace.yaml
+$ kubectl apply -f pod-in-namespace.yaml
 pod/nginx2 created
 ```
 Listing resources inside a specific namespace
@@ -158,21 +158,26 @@ Another minikube cluster
 $ minikube start --profile cluster2-vb --driver=virtualbox
 ```
 
-Create Pod with requests and limits
+## Create Pod with requests and limits
+
+```shell
+$ kubectl create ns quota-ns
+namespace/quota-ns created
+```
 
 ```shell
 $ kubectl apply -f pod-with-request-and-limit-1.yaml
 pod/nginx-with-request-and-limit-1 created
 
-$  kubectl get pod -n custom-ns
+$ kubectl get pod -n quota-ns
 NAME                             READY   STATUS    RESTARTS   AGE
 nginx-with-request-and-limit-1   0/1     Pending   0          45s
 ```
 
 ```shell
-$ kubectl describe po nginx-with-request-and-limit-1 -n custom-ns
+$ kubectl describe po nginx-with-request-and-limit-1 -n quota-ns
 Name:             nginx-with-request-and-limit-1
-Namespace:        custom-ns
+Namespace:        quota-ns
 Priority:         0
 Service Account:  default
 Node:             <none>
@@ -216,46 +221,46 @@ Events:
 ```
 
 ```shell
-$ kubectl create -f pod-with-request-and-limit-2.yaml
+$ kubectl apply -f pod-with-request-and-limit-2.yaml
 pod/nginx-with-request-and-limit-2 created
 
-$ kubectl get po -n custom-ns
+$ kubectl get po -n quota-ns
 NAME                             READY   STATUS    RESTARTS   AGE
 nginx-with-request-and-limit-1   0/1     Pending   0          8m24s
 nginx-with-request-and-limit-2   1/1     Running   0          20s
 ```
 
 ```shell
-$ kubectl create -f resourcequota.yaml
+$ kubectl apply -f resourcequota.yaml
 resourcequota/resourcequota created
-$ kubectl get quota -n custom-ns
+
+$ kubectl get quota -n quota-ns
 NAME            AGE   REQUEST                                          LIMIT
 resourcequota   4s    requests.cpu: 100m/1, requests.memory: 1Gi/1Gi   limits.cpu: 500m/2, limits.memory: 2Gi/2Gi
 ```
 
 ```shell
-$ kubectl get po -n custom-ns
+$ kubectl get po -n quota-ns
 NAME                             READY   STATUS    RESTARTS        AGE
 nginx-with-request-and-limit-2   1/1     Running   1 (5h41m ago)   7h18m
-$ kubectl top pod -n custom-ns
+$ kubectl top pod -n quota-ns
 NAME                             CPU(cores)   MEMORY
 
 $ kubectl apply -f pod-with-request-and-limit-3.yaml
 Error from server (Forbidden): error when creating "pod-with-request-and-limit-3.yaml": pods "nginx-with-request-and-limit-3" is forbidden: exceeded quota: resourcequota, requested: limits.memory=4Gi,requests.memory=3Gi, used: limits.memory=2Gi,requests.memory=1Gi, limited: limits.memory=2Gi,requests.memory=1Gi
 ```
 
-
 ```shell
-$ kubectl get resourcequotas -n custom-ns
+$ kubectl get resourcequotas -n quota-ns
 NAME            AGE   REQUEST                                          LIMIT
 resourcequota   15m   requests.cpu: 100m/1, requests.memory: 1Gi/1Gi   limits.cpu: 500m/2, limits.memory: 2Gi/2Gi
 ```
 
 ```shell
-$ kubectl get limitranges -n custom-ns
+$ kubectl get limitranges -n quota-ns
 NAME            CREATED AT
 my-limitrange   2024-03-10T16:13:00Z
 
-$ kubectl delete limitranges my-limitrange -n custom-ns
+$ kubectl delete limitranges my-limitrange -n quota-ns
 limitrange "my-limitrange" deleted
 ```
