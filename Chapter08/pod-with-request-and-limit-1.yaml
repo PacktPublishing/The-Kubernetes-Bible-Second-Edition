@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: nginx-with-request-and-limit-1
-  namespace: custom-ns
+  namespace: quota-ns
 spec:
   containers:
     - name: nginx
