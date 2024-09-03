@@ -254,12 +254,26 @@ Error from server (Forbidden): error when creating "pod-with-request-and-limit-3
 $ kubectl get resourcequotas -n quota-ns
 NAME            AGE   REQUEST                                          LIMIT
 resourcequota   15m   requests.cpu: 100m/1, requests.memory: 1Gi/1Gi   limits.cpu: 500m/2, limits.memory: 2Gi/2Gi
+
+$ kubectl delete -f resourcequota-with-object-count.yaml
+resourcequota "my-resourcequota" deleted
 ```
 
 ```shell
+$ kubectl apply -f limitrange.yaml
+limitrange/my-limitrange created
+
 $ kubectl get limitranges -n quota-ns
 NAME            CREATED AT
 my-limitrange   2024-03-10T16:13:00Z
+
+$ kubectl describe limitranges my-limitrange -n quota-ns
+Name:       my-limitrange
+Namespace:  quota-ns
+Type        Resource  Min    Max     Default Request  Default Limit  Max Limit/Request Ratio
+----        --------  ---    ---     ---------------  -------------  -----------------------
+Container   memory    128Mi  1000Mi  128Mi            256Mi          -
+Container   cpu       100m   1       500m             500m           -
 
 $ kubectl delete limitranges my-limitrange -n quota-ns
 limitrange "my-limitrange" deleted
