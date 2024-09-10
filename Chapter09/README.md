@@ -1,5 +1,55 @@
 # Persistent Storage in Kubernetes
 
+## Volumes
+
+```shell
+$ kubectl apply -f nginx-configmap.yaml
+configmap/nginx-hello created
+$ kubectl apply -f nginx-pod.yaml
+pod/nginx-hello created
+
+$ kubectl get pod,cm
+NAME              READY   STATUS    RESTARTS   AGE
+pod/nginx-hello   1/1     Running   0          7m26s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      7d17h
+configmap/nginx-hello        2      7m31s
+```
+
+```shell
+$ kubectl exec -t pod/nginx-hello -- ls -al /usr/share/nginx/html/hello/
+total 12
+drwxrwxrwx 3 root root 4096 Sep  7 21:19 .
+drwxr-xr-x 1 root root 4096 Sep  7 21:20 ..
+drwxr-xr-x 2 root root 4096 Sep  7 21:19 ..2024_09_07_21_19_53.724649770
+lrwxrwxrwx 1 root root   31 Sep  7 21:19 ..data -> ..2024_09_07_21_19_53.724649770
+lrwxrwxrwx 1 root root   18 Sep  7 21:19 hello1.html -> ..data/hello1.html
+lrwxrwxrwx 1 root root   18 Sep  7 21:19 hello2.html -> ..data/hello2.html
+```
+
+```shell
+$ kubectl port-forward nginx-hello 8080:80
+Forwarding from 127.0.0.1:8080 -> 80
+Forwarding from [::1]:8080 -> 80
+```
+
+On a second terminal
+
+```shell
+$ curl 127.0.0.1:8080/hello/hello1.html
+<html>
+  hello world 1
+</html>
+
+$ curl 127.0.0.1:8080/hello/hello2.html
+<html>
+  hello world 2
+</html>
+```
+
+## Persistent Volumes
+
 ```shell
 $ kubectl get persistentvolume
 No resource found

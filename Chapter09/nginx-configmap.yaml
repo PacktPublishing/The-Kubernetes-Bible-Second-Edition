@@ -1,0 +1,17 @@
+# nginx-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-hello
+  labels:
+    app: test
+immutable: false
+data:
+  hello1.html: |
+    <html>
+      hello world 1
+    </html>
+  hello2.html: |
+    <html>
+      hello world 2
+    </html>
