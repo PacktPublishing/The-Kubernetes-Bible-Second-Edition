@@ -3,6 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: my-hostpath-pvc
+  namespace: pv-ns
 spec:
   resources:
     requests:

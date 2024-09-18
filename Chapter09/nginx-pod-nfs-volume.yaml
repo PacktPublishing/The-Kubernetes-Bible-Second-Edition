@@ -1,0 +1,22 @@
+# nginx-pod-nfs-volume.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-hello-nfs
+  labels:
+    app: test
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.14.2
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: nfs-volume
+          mountPath: "/usr/share/nginx/html/hello"
+  volumes:
+    - name: nfs-volume
+      nfs:
+        server: nfs.corp.mycompany.org
+        path: /k8s-nginx-hello
+        readOnly: true

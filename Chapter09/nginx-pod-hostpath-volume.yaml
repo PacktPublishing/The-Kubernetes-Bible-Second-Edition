@@ -1,0 +1,21 @@
+# nginx-pod-hostpath-volume.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-hello-hostpath
+  labels:
+    app: test
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.14.2
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: hostpath-volume
+          mountPath: "/usr/share/nginx/html/hello"
+  volumes:
+    - name: hostpath-volume
+      hostPath:
+        path: /data/foo
+        # type: Directory #

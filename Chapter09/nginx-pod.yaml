@@ -1,0 +1,20 @@
+# nginx-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-hello
+  labels:
+    app: test
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.14.2
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: nginx-hello
+          mountPath: "/usr/share/nginx/html/hello"
+  volumes:
+    - name: nginx-hello
+      configMap:
+        name: nginx-hello

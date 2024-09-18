@@ -1,0 +1,25 @@
+# nginx-pod-fiberchannel.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-hello-fc
+  labels:
+    app: test
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.14.2
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: fc-vol
+          mountPath: "/usr/share/nginx/html/hello"
+  volumes:
+    - name: fc-vol
+      fc:
+        targetWWNs:
+          - 500a0982991b8dc5
+          - 500a0982891b8dc5
+        lun: 2
+        fsType: ext4
+        readOnly: true
