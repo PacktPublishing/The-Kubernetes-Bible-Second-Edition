@@ -1,8 +1,10 @@
 # pod.yaml
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: nginx
+  namespace: pv-ns
 spec:
   containers:
     - image: nginx

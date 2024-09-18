@@ -1,0 +1,8 @@
+# pv-ns.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    project: pv-ns
+  name: pv-ns

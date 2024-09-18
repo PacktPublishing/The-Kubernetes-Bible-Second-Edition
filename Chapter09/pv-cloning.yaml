@@ -1,0 +1,16 @@
+# pv-cloning.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cloned-pvc
+  namespace: mynamespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: custom-storage-class
+  resources:
+    requests:
+      storage: 5Gi
+  dataSource:
+    kind: PersistentVolumeClaim
+    name: original-pvc
