@@ -54,6 +54,17 @@ Endpoints:         10.244.0.9:80
 Session Affinity:  None
 Events:            <none>
 
+# temp Port-forward to see the nginx app
+$ kubectl port-forward pod/nginx 8080:80
+Forwarding from 127.0.0.1:8080 -> 80
+Forwarding from [::1]:8080 -> 80
+
+# Open another console and check the URL as follows
+$ curl 127.0.0.1:8080
+<!DOCTYPE html>
+<html>
+...<removed for brevity>...
+
 # if you want to test it with NodePort in minikube
 $ kubectl expose pod nginx --port=80 --type=NodePort
 service/nginx exposed
@@ -126,8 +137,17 @@ $ kubectl get service nodeport-whoami
 NAME              TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 nodeport-whoami   NodePort   10.98.160.98   <none>        80:30001/TCP   14s
 
+$ minikube ip
+192.168.64.2
+
 $ minikube service --url nodeport-whoami
 http://192.168.49.2:30001
+
+$  ubectl get service
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+example-service   ClusterIP   10.106.224.122   <none>        80/TCP         26d
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP        26d
+nodeport-whoami   NodePort    10.100.85.171    <none>        80:30001/TCP   21s
 
 $ kubectl describe service nodeport-whoami
 Name:                     nodeport-whoami
