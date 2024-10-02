@@ -3,8 +3,9 @@ apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
   name: nginx-replicaset-example
+  namespace: rs-ns
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
       app: nginx
