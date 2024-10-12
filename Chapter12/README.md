@@ -4,7 +4,8 @@
 ## Create a secret
 
 ```shell
-$ kubectl create ns mysql
+$ kubectl apply -f mysql-ns.yaml
+namespace/mysql created
 ```
 
 ```shell
@@ -16,7 +17,7 @@ $ kubectl create secret generic mysql-secret \
 ```
 
 ```shell
-$  kubectl create -f mysql-headless-service.yaml
+$ kubectl create -f mysql-headless-service.yaml
 service/mysql-headless created
 ```
 
@@ -337,6 +338,28 @@ mysql-stateful-1   1/1     Running   0             62s
 mysql-stateful-2   1/1     Running   0             58s
 ```
 
+### Create a new database
+
+```shell
+$ kubectl exec -it -n mysql k8sutils -- /bin/bash
+```
+
+```shell
+root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
+
+Enter password: <mysqlroot>
+
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+...<removed for brevity>...
+
+MySQL [(none)]> create database stsrolling;
+Query OK, 1 row affected (0.027 sec)
+
+MySQL [(none)]> exit;
+
+Bye
+```
+
 ```shell
 $ kubectl apply -f mysql-statefulset-rolling-update.yaml
 statefulset.apps/mysql-stateful configured
@@ -374,17 +397,16 @@ Events:
 
 ```shell
 $ kubectl describe pod -n mysql mysql-stateful-0|grep Image
-    Image:          mysql:8.4.0
-    Image ID:       docker-pullable://mysql@sha256:4a4e5e2a19aab7a67870588952e8f401e17a330466ecfc55c9acf51196da5bd0
+    Image:          mysql:8.3.0
+    Image ID:       docker.io/library/mysql@sha256:9de9d54fecee6253130e65154b930978b1fcc336bcc86dfd06e89b72a2588ebe
 ```
 
 ```shell
-$  kubectl exec -it -n mysql k8sutils -- /bin/bash
+$ kbectl exec -it -n mysql k8sutils -- /bin/bash
 root@k8sutils:/# mysql -u root -p -h mysql-stateful-0.mysql-headless
-Enter password:
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 8
-Server version: 8.2.0 MySQL Community Server - GPL
+Enter password: <mysqlroot>
+...<removed for brevity>...
+Server version: 8.3.0 MySQL Community Server - GPL
 
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
@@ -397,10 +419,10 @@ MySQL [(none)]> show databases;
 | information_schema |
 | mysql              |
 | performance_schema |
-| ststest            |
+| stsrolling         |
 | sys                |
 +--------------------+
-5 rows in set (0.002 sec)
+5 rows in set (0.004 sec)
 
 MySQL [(none)]>
 ```
@@ -461,7 +483,7 @@ MySQL [(none)]> show databases;
 
 Update `partition: 3` and `image: mysql:8.4.0`
 
-```shel
+```shell
 $ kubectl apply -f mysql-statefulset-rolling-update.yaml
 statefulset.apps/mysql-stateful configured
 ```
@@ -488,6 +510,21 @@ $ kubectl describe pod -n mysql mysql-stateful-0|grep Image
 $ kubectl describe pod -n mysql mysql-stateful-2|grep Image
     Image:          mysql:8.4.0
     Image ID:       docker-pullable://mysql@sha256:4a4e5e2a19aab7a67870588952e8f401e17a330466ecfc55c9acf51196da5bd0
+```
+
+```shell
+$ kubectl exec -it -n mysql k8sutils -- /bin/bash
+root@k8sutils:/# mysql -u root -p -h mysql-stateful-2.mysql-headless
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 11
+Server version: 8.4.0 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]>
 ```
 
 Full phase out to new image

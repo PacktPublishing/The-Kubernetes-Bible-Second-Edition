@@ -28,7 +28,7 @@ spec:
         volumeMounts:
         - name: nginx-data
           mountPath: /usr/share/nginx/html
-        command: 
+        command:
         - /bin/sh
         - -c
         - |
