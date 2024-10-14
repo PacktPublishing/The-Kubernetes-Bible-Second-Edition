@@ -70,9 +70,9 @@ node/minikube-m02 labeled
 $ kubectl label nodes minikube-m03 node-type=superfast
 node/minikube-m03 labeled
 
-$ oc get nodes --show-labels |grep superfast
-minikube-m02   Ready    <none>          80m   v1.30.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube-m02,kubernetes.io/os=linux,minikube.k8s.io/commit=5883c09216182566a63dff4c326a6fc9ed2982ff,minikube.k8s.io/name=minikube,minikube.k8s.io/primary=false,minikube.k8s.io/updated_at=2024_07_21T16_41_14_0700,minikube.k8s.io/version=v1.33.1,node-type=superfast
-minikube-m03   Ready    <none>          79m   v1.30.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube-m03,kubernetes.io/os=linux,minikube.k8s.io/commit=5883c09216182566a63dff4c326a6fc9ed2982ff,minikube.k8s.io/name=minikube,minikube.k8s.io/primary=false,minikube.k8s.io/updated_at=2024_07_21T16_42_25_0700,minikube.k8s.io/version=v1.33.1,node-type=superfast
+$ kubectl get nodes --show-labels |grep superfast
+minikube-m02   Ready    <none>          2m59s   v1.31.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube-m02,kubernetes.io/os=linux,minikube.k8s.io/commit=5883c09216182566a63dff4c326a6fc9ed2982ff,minikube.k8s.io/name=minikube,minikube.k8s.io/primary=false,minikube.k8s.io/updated_at=2024_10_13T15_26_06_0700,minikube.k8s.io/version=v1.33.1,node-type=superfast
+minikube-m03   Ready    <none>          2m30s   v1.31.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube-m03,kubernetes.io/os=linux,minikube.k8s.io/commit=5883c09216182566a63dff4c326a6fc9ed2982ff,minikube.k8s.io/name=minikube,minikube.k8s.io/primary=false,minikube.k8s.io/updated_at=2024_10_13T15_26_34_0700,minikube.k8s.io/version=v1.33.1,node-type=superfast
 ```
 
 ```shell
