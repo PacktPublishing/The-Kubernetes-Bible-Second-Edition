@@ -15,7 +15,7 @@ spec:
         app: nginx
         environment: test
     spec:
-      nodeName: minikube-m02
+      # nodeName: minikube-m02
       containers:
         - name: nginx
           image: nginx:1.17
