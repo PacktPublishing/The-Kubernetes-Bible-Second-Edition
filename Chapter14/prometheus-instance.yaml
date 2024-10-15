@@ -1,0 +1,29 @@
+# promethues-instance.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    project: monitoring
+  name: monitoring
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: example-prometheus
+  namespace: monitoring
+spec:
+  replicas: 2
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      k8s-app: node-exporter
+  # ruleSelector: {}
+  # podMonitorSelector: {}
+  # probeSelector: {}
+  # alerting:
+  #   alertmanagers:
+  #     - namespace: monitoring
+  #       name: alertmanager-main
+  #       port: web

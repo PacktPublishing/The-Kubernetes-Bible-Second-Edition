@@ -234,71 +234,183 @@ kubectl -n dashboard get secret $(kubectl -n dashboard get sa/admin-user -o json
 ## Operators
 
 ```shell
-$ helm repo update
-Hang tight while we grab the latest from your chart repositories...
-...Successfully got an update from the "kubernetes-dashboard" chart repository
-...Successfully got an update from the "stable" chart repository
-...Successfully got an update from the "bitnami" chart repository
-Update Complete. ⎈Happy Helming!⎈
+$ curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.28.0/install.sh | bash -s v0.28.0
+customresourcedefinition.apiextensions.k8s.io/catalogsources.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/clusterserviceversions.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/installplans.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/olmconfigs.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/operatorconditions.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/operatorgroups.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/operators.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/subscriptions.operators.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/catalogsources.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/clusterserviceversions.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/installplans.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/olmconfigs.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/operatorconditions.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/operatorgroups.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/operators.operators.coreos.com condition met
+customresourcedefinition.apiextensions.k8s.io/subscriptions.operators.coreos.com condition met
+namespace/olm created
+namespace/operators created
+serviceaccount/olm-operator-serviceaccount created
+clusterrole.rbac.authorization.k8s.io/system:controller:operator-lifecycle-manager created
+clusterrolebinding.rbac.authorization.k8s.io/olm-operator-binding-olm created
+olmconfig.operators.coreos.com/cluster created
+deployment.apps/olm-operator created
+deployment.apps/catalog-operator created
+clusterrole.rbac.authorization.k8s.io/aggregate-olm-edit created
+clusterrole.rbac.authorization.k8s.io/aggregate-olm-view created
+operatorgroup.operators.coreos.com/global-operators created
+operatorgroup.operators.coreos.com/olm-operators created
+clusterserviceversion.operators.coreos.com/packageserver created
+catalogsource.operators.coreos.com/operatorhubio-catalog created
+Waiting for deployment "olm-operator" rollout to finish: 0 of 1 updated replicas are available...
+deployment "olm-operator" successfully rolled out
+Waiting for deployment "catalog-operator" rollout to finish: 0 of 1 updated replicas are available...
+deployment "catalog-operator" successfully rolled out
+Package server phase: Installing
+Package server phase: Succeeded
+deployment "packageserver" successfully rolled out
 ```
 
 ```shell
-$ helm install prometheus bitnami/kube-prometheus --create-namespace --namespace monitoring
-NAME: prometheus
-LAST DEPLOYED: Thu Jun  6 14:45:28 2024
-NAMESPACE: monitoring
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-CHART NAME: kube-prometheus
-CHART VERSION: 9.3.0
-APP VERSION: 0.74.0
-
-** Please be patient while the chart is being deployed **
-
-Watch the Prometheus Operator Deployment status using the command:
-
-    kubectl get deploy -w --namespace monitoring -l app.kubernetes.io/name=kube-prometheus-operator,app.kubernetes.io/instance=prometheus
-
-Watch the Prometheus StatefulSet status using the command:
-
-    kubectl get sts -w --namespace monitoring -l app.kubernetes.io/name=kube-prometheus-prometheus,app.kubernetes.io/instance=prometheus
-
-Prometheus can be accessed via port "9090" on the following DNS name from within your cluster:
-
-    prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local
-
-To access Prometheus from outside the cluster execute the following commands:
-
-    echo "Prometheus URL: http://127.0.0.1:9090/"
-    kubectl port-forward --namespace monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090
-
-Watch the Alertmanager StatefulSet status using the command:
-
-    kubectl get sts -w --namespace monitoring -l app.kubernetes.io/name=kube-prometheus-alertmanager,app.kubernetes.io/instance=prometheus
-
-Alertmanager can be accessed via port "9093" on the following DNS name from within your cluster:
-
-    prometheus-kube-prometheus-alertmanager.monitoring.svc.cluster.local
-
-To access Alertmanager from outside the cluster execute the following commands:
-
-    echo "Alertmanager URL: http://127.0.0.1:9093/"
-    kubectl port-forward --namespace monitoring svc/prometheus-kube-prometheus-alertmanager 9093:9093
-
-WARNING: There are "resources" sections in the chart not set. Using "resourcesPreset" is not recommended for production. For production installations, please set the following values according to your workload needs:
-  - alertmanager.resources
-  - blackboxExporter.resources
-  - operator.resources
-  - prometheus.resources
-  - prometheus.thanos.resources
-+info https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-
+$ kubectl get pods -n olm
+NAME                               READY   STATUS    RESTARTS   AGE
+catalog-operator-9f6dc8c87-nmlql   1/1     Running   0          7m26s
+olm-operator-6bccddc987-splxl      1/1     Running   0          7m27s
+operatorhubio-catalog-qn6dk        1/1     Running   0          7m9s
+packageserver-66fd9fb545-45wv4     1/1     Running   0          7m10s
+packageserver-66fd9fb545-rq52b     1/1     Running   0          7m9s
 ```
 
 ```shell
-$  kubectl get pod,svc,sts -n monitoring
+$ kubectl get csv -n olm
+NAME            DISPLAY          VERSION   REPLACES   PHASE
+packageserver   Package Server   0.28.0               Succeeded
+```
+
+Check prometheus
+
+```shell
+$ kubectl get packagemanifests | grep prometheus
+ack-prometheusservice-controller           Community Operators   12m
+prometheus                                 Community Operators   12m
+prometheus-exporter-operator               Community Operators   12m
+```
+
+Install and check prometheus operator
+
+```shell
+$ kubectl create -f https://operatorhub.io/install/prometheus.yaml
+subscription.operators.coreos.com/my-prometheus created
+
+$ kubectl get csv -n operators
+NAME                         DISPLAY               VERSION   REPLACES                     PHASE
+prometheusoperator.v0.70.0   Prometheus Operator   0.70.0    prometheusoperator.v0.65.1   Succeeded
+
+$ kubectl get pods -n operators
+NAME                                   READY   STATUS    RESTARTS   AGE
+prometheus-operator-84f9b76686-2j27n   1/1     Running   0          87s
+```
+
+Install and check Grafana operator
+
+```shell
+$ kubectl create -f https://operatorhub.io/install/grafana-operator.yaml
+subscription.operators.coreos.com/my-grafana-operator created
+```
+
+```shell
+$ kubectl create -f https://operatorhub.io/install/grafana-operator.yaml
+```
+
+Check CRD
+
+```shell
+$ kubectl get crd
+NAME                                                  CREATED AT
+alertmanagerconfigs.monitoring.coreos.com             2024-10-15T16:53:43Z
+alertmanagers.monitoring.coreos.com                   2024-10-15T16:53:42Z
+catalogsources.operators.coreos.com                   2024-10-15T16:40:57Z
+clusterserviceversions.operators.coreos.com           2024-10-15T16:40:57Z
+grafanaalertrulegroups.grafana.integreatly.org        2024-10-15T17:03:52Z
+grafanacontactpoints.grafana.integreatly.org          2024-10-15T17:03:52Z
+grafanadashboards.grafana.integreatly.org             2024-10-15T17:03:53Z
+grafanadatasources.grafana.integreatly.org            2024-10-15T17:03:52Z
+grafanafolders.grafana.integreatly.org                2024-10-15T17:03:52Z
+grafananotificationpolicies.grafana.integreatly.org   2024-10-15T17:03:52Z
+grafanas.grafana.integreatly.org                      2024-10-15T17:03:52Z
+installplans.operators.coreos.com                     2024-10-15T16:40:57Z
+olmconfigs.operators.coreos.com                       2024-10-15T16:40:57Z
+operatorconditions.operators.coreos.com               2024-10-15T16:40:57Z
+operatorgroups.operators.coreos.com                   2024-10-15T16:40:57Z
+operators.operators.coreos.com                        2024-10-15T16:40:57Z
+podmonitors.monitoring.coreos.com                     2024-10-15T16:53:44Z
+probes.monitoring.coreos.com                          2024-10-15T16:53:44Z
+prometheusagents.monitoring.coreos.com                2024-10-15T16:53:45Z
+prometheuses.monitoring.coreos.com                    2024-10-15T16:53:42Z
+prometheusrules.monitoring.coreos.com                 2024-10-15T16:53:44Z
+scrapeconfigs.monitoring.coreos.com                   2024-10-15T16:53:43Z
+servicemonitors.monitoring.coreos.com                 2024-10-15T16:53:44Z
+subscriptions.operators.coreos.com                    2024-10-15T16:40:57Z
+thanosrulers.monitoring.coreos.com                    2024-10-15T16:53:44Z
+```
+
+Create Service Account
+
+```shell
+$ kubectl apply -f monitoring-sa.yaml
+serviceaccount/prometheus created
+role.rbac.authorization.k8s.io/prometheus-role created
+rolebinding.rbac.authorization.k8s.io/prometheus-rolebinding created
+```
+
+Create Prometheus instance
+
+```shell
+$ kubectl apply -f promethues-instance.yaml
+namespace/monitoring created
+prometheus.monitoring.coreos.com/example-prometheus created
+```
+
+```shell
+$ kubectl get pod,svc,sts -n monitoring
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/prometheus-example-prometheus-0   2/2     Running   0          5m52s
+pod/prometheus-example-prometheus-1   2/2     Running   0          5m52s
+
+NAME                          TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+service/prometheus-operated   ClusterIP   None         <none>        9090/TCP   12m
+
+NAME                                             READY   AGE
+statefulset.apps/prometheus-example-prometheus   2/2     12m
+```
+
+Install Grafana instance
+
+```shell
+$ kubectl apply -f grafana-instnace.yaml
+grafana.grafana.integreatly.org/grafana-a created
+```
+
+```shell
+$ kubectl get pod,svc,sts -n monitoring
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/grafana-a-deployment-69f8999f8-7pt4p   1/1     Running   0          3m26s
+pod/prometheus-example-prometheus-0        2/2     Running   0          15m
+pod/prometheus-example-prometheus-1        2/2     Running   0          15m
+
+NAME                          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/grafana-a-service     ClusterIP   10.103.109.92   <none>        3000/TCP   3m26s
+service/prometheus-operated   ClusterIP   None            <none>        9090/TCP   22m
+
+NAME                                             READY   AGE
+statefulset.apps/prometheus-example-prometheus   2/2     22m
+```
+
+```shell
+$ kubectl get pod,svc,sts -n monitoring
 NAME                                                              READY   STATUS    RESTARTS   AGE
 pod/alertmanager-prometheus-kube-prometheus-alertmanager-0        2/2     Running   0          8m10s
 pod/prometheus-kube-prometheus-blackbox-exporter-984564d5-z264l   1/1     Running   0          9m8s
