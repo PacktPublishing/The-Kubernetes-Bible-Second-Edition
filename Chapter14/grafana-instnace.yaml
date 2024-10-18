@@ -1,0 +1,18 @@
+# grafana-instnace.yaml
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  labels:
+    dashboards: grafana-a
+    folders: grafana-a
+  name: grafana-a
+  namespace: monitoring
+spec:
+  config:
+    auth:
+      disable_login_form: 'false'
+    log:
+      mode: console
+    security:
+      admin_password: start
+      admin_user: root

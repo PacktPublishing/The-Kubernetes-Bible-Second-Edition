@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: prometheus
+    meta.helm.sh/release-namespace: newmonitoring
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2024-10-18T00:36:29Z"
+  labels:
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: node-exporter
+    app.kubernetes.io/version: 1.8.2
+    helm.sh/chart: node-exporter-4.4.15
+    jobLabel: node-exporter
+  name: prometheus-node-exporter
+  namespace: newmonitoring
+  resourceVersion: "48798"
+  uid: f96317c4-2b57-4115-9ad0-80d85a730543
+spec:
+  clusterIP: 10.108.88.66
+  clusterIPs:
+  - 10.108.88.66
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: metrics
+    port: 9100
+    protocol: TCP
+    targetPort: metrics
+  selector:
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: node-exporter
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

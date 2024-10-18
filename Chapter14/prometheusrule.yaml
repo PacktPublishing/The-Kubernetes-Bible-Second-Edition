@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-exporter-rules
+  namespace: monitoring
+spec:
+  groups:
+  - name: node-exporter.rules
+    rules:
+    - alert: HighCPUUsage
+      expr: node_cpu_seconds_total{mode!="idle"} > 80
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High CPU Usage Detected"
+        description: "Node CPU usage is above 80% for more than 5 minutes."
