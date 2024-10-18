@@ -1,5 +1,17 @@
 # Working with Helm Charts and Operator
 
+- [Working with Helm Charts and Operator](#working-with-helm-charts-and-operator)
+  - [Install Helm](#install-helm)
+    - [Install Chart](#install-chart)
+    - [Install WordPress](#install-wordpress)
+    - [Additional deployments](#additional-deployments)
+      - [Kubernetes Dashboard](#kubernetes-dashboard)
+  - [Operators](#operators)
+    - [Install Prometheus operator](#install-prometheus-operator)
+    - [Install and check Grafana operator](#install-and-check-grafana-operator)
+    - [Check CRD](#check-crd)
+    - [Create Prometheus and Grafana instance](#create-prometheus-and-grafana-instance)
+
 ## Install Helm
 
 ```shell
@@ -30,7 +42,7 @@ $ helm version
 version.BuildInfo{Version:"v3.15.1", GitCommit:"e211f2aa62992bd72586b395de50979e31231829", GitTreeState:"clean", GoVersion:"go1.22.3"}
 ```
 
-## Install Chart
+### Install Chart
 
 ```shell
 $ helm repo add stable https://charts.helm.sh/stable
@@ -54,7 +66,7 @@ https://artifacthub.io/packages/helm/wordpress-...      1.0.2           1.0.0   
 https://artifacthub.io/packages/helm/bitnami-ak...      15.2.13         6.1.0                  WordPress is the world's most popular blogging ...
 ```
 
-## Install WordPress
+### Install WordPress
 
 ```shell
 $ helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -159,9 +171,9 @@ $ helm uninstall wp-demo -n wordpress
 release "wp-demo" uninstalled
 ```
 
-## Additional deployments
+### Additional deployments
 
-### Kubernetes Dashboard
+#### Kubernetes Dashboard
 
 ```shell
 $ helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
@@ -277,11 +289,11 @@ deployment "packageserver" successfully rolled out
 ```shell
 $ kubectl get pods -n olm
 NAME                               READY   STATUS    RESTARTS   AGE
-catalog-operator-9f6dc8c87-nmlql   1/1     Running   0          7m26s
-olm-operator-6bccddc987-splxl      1/1     Running   0          7m27s
-operatorhubio-catalog-qn6dk        1/1     Running   0          7m9s
-packageserver-66fd9fb545-45wv4     1/1     Running   0          7m10s
-packageserver-66fd9fb545-rq52b     1/1     Running   0          7m9s
+catalog-operator-9f6dc8c87-rt569   1/1     Running   0          36s
+olm-operator-6bccddc987-nrlkm      1/1     Running   0          36s
+operatorhubio-catalog-6l8pw        0/1     Running   0          21s
+packageserver-6df47456b9-8fdt7     1/1     Running   0          24s
+packageserver-6df47456b9-lrvzp     1/1     Running   0          24s
 ```
 
 ```shell
@@ -289,6 +301,7 @@ $ kubectl get csv -n olm
 NAME            DISPLAY          VERSION   REPLACES   PHASE
 packageserver   Package Server   0.28.0               Succeeded
 ```
+### Install Prometheus operator
 
 Check prometheus
 
@@ -311,50 +324,53 @@ prometheusoperator.v0.70.0   Prometheus Operator   0.70.0    prometheusoperator.
 
 $ kubectl get pods -n operators
 NAME                                   READY   STATUS    RESTARTS   AGE
-prometheus-operator-84f9b76686-2j27n   1/1     Running   0          87s
+prometheus-operator-84f9b76686-twvbq   1/1     Running   0          10m
 ```
 
-Install and check Grafana operator
+### Install and check Grafana operator
 
 ```shell
 $ kubectl create -f https://operatorhub.io/install/grafana-operator.yaml
 subscription.operators.coreos.com/my-grafana-operator created
 ```
 
-```shell
-$ kubectl create -f https://operatorhub.io/install/grafana-operator.yaml
-```
-
-Check CRD
+### Check CRD
 
 ```shell
 $ kubectl get crd
 NAME                                                  CREATED AT
-alertmanagerconfigs.monitoring.coreos.com             2024-10-15T16:53:43Z
-alertmanagers.monitoring.coreos.com                   2024-10-15T16:53:42Z
-catalogsources.operators.coreos.com                   2024-10-15T16:40:57Z
-clusterserviceversions.operators.coreos.com           2024-10-15T16:40:57Z
-grafanaalertrulegroups.grafana.integreatly.org        2024-10-15T17:03:52Z
-grafanacontactpoints.grafana.integreatly.org          2024-10-15T17:03:52Z
-grafanadashboards.grafana.integreatly.org             2024-10-15T17:03:53Z
-grafanadatasources.grafana.integreatly.org            2024-10-15T17:03:52Z
-grafanafolders.grafana.integreatly.org                2024-10-15T17:03:52Z
-grafananotificationpolicies.grafana.integreatly.org   2024-10-15T17:03:52Z
-grafanas.grafana.integreatly.org                      2024-10-15T17:03:52Z
-installplans.operators.coreos.com                     2024-10-15T16:40:57Z
-olmconfigs.operators.coreos.com                       2024-10-15T16:40:57Z
-operatorconditions.operators.coreos.com               2024-10-15T16:40:57Z
-operatorgroups.operators.coreos.com                   2024-10-15T16:40:57Z
-operators.operators.coreos.com                        2024-10-15T16:40:57Z
-podmonitors.monitoring.coreos.com                     2024-10-15T16:53:44Z
-probes.monitoring.coreos.com                          2024-10-15T16:53:44Z
-prometheusagents.monitoring.coreos.com                2024-10-15T16:53:45Z
-prometheuses.monitoring.coreos.com                    2024-10-15T16:53:42Z
-prometheusrules.monitoring.coreos.com                 2024-10-15T16:53:44Z
-scrapeconfigs.monitoring.coreos.com                   2024-10-15T16:53:43Z
-servicemonitors.monitoring.coreos.com                 2024-10-15T16:53:44Z
-subscriptions.operators.coreos.com                    2024-10-15T16:40:57Z
-thanosrulers.monitoring.coreos.com                    2024-10-15T16:53:44Z
+alertmanagerconfigs.monitoring.coreos.com             2024-10-18T09:14:03Z
+alertmanagers.monitoring.coreos.com                   2024-10-18T09:14:04Z
+catalogsources.operators.coreos.com                   2024-10-18T09:10:00Z
+clusterserviceversions.operators.coreos.com           2024-10-18T09:10:00Z
+grafanaalertrulegroups.grafana.integreatly.org        2024-10-18T09:25:19Z
+grafanacontactpoints.grafana.integreatly.org          2024-10-18T09:25:19Z
+grafanadashboards.grafana.integreatly.org             2024-10-18T09:25:20Z
+grafanadatasources.grafana.integreatly.org            2024-10-18T09:25:20Z
+grafanafolders.grafana.integreatly.org                2024-10-18T09:25:19Z
+grafananotificationpolicies.grafana.integreatly.org   2024-10-18T09:25:20Z
+grafanas.grafana.integreatly.org                      2024-10-18T09:25:19Z
+installplans.operators.coreos.com                     2024-10-18T09:10:00Z
+olmconfigs.operators.coreos.com                       2024-10-18T09:10:00Z
+operatorconditions.operators.coreos.com               2024-10-18T09:10:00Z
+operatorgroups.operators.coreos.com                   2024-10-18T09:10:00Z
+operators.operators.coreos.com                        2024-10-18T09:10:00Z
+podmonitors.monitoring.coreos.com                     2024-10-18T09:14:03Z
+probes.monitoring.coreos.com                          2024-10-18T09:14:03Z
+prometheusagents.monitoring.coreos.com                2024-10-18T09:14:04Z
+prometheuses.monitoring.coreos.com                    2024-10-18T09:14:04Z
+prometheusrules.monitoring.coreos.com                 2024-10-18T09:14:03Z
+scrapeconfigs.monitoring.coreos.com                   2024-10-18T09:14:03Z
+servicemonitors.monitoring.coreos.com                 2024-10-18T09:14:03Z
+subscriptions.operators.coreos.com                    2024-10-18T09:10:00Z
+thanosrulers.monitoring.coreos.com                    2024-10-18T09:14:03Z
+```
+
+### Create Prometheus and Grafana instance
+
+```shell
+$ kubectl apply -f monitoring-ns.yaml
+namespace/monitoring created
 ```
 
 Create Service Account
@@ -369,22 +385,8 @@ rolebinding.rbac.authorization.k8s.io/prometheus-rolebinding created
 Create Prometheus instance
 
 ```shell
-$ kubectl apply -f promethues-instance.yaml
-namespace/monitoring created
+$ kubectl apply -f prometheus-instance.yaml
 prometheus.monitoring.coreos.com/example-prometheus created
-```
-
-```shell
-$ kubectl get pod,svc,sts -n monitoring
-NAME                                  READY   STATUS    RESTARTS   AGE
-pod/prometheus-example-prometheus-0   2/2     Running   0          5m52s
-pod/prometheus-example-prometheus-1   2/2     Running   0          5m52s
-
-NAME                          TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
-service/prometheus-operated   ClusterIP   None         <none>        9090/TCP   12m
-
-NAME                                             READY   AGE
-statefulset.apps/prometheus-example-prometheus   2/2     12m
 ```
 
 Install Grafana instance
@@ -395,149 +397,52 @@ grafana.grafana.integreatly.org/grafana-a created
 ```
 
 ```shell
-$ kubectl get pod,svc,sts -n monitoring
+$  kubectl get pod,svc,sts -n monitoring
 NAME                                       READY   STATUS    RESTARTS   AGE
-pod/grafana-a-deployment-69f8999f8-7pt4p   1/1     Running   0          3m26s
-pod/prometheus-example-prometheus-0        2/2     Running   0          15m
-pod/prometheus-example-prometheus-1        2/2     Running   0          15m
+pod/grafana-a-deployment-69f8999f8-82zbv   1/1     Running   0          17m
+pod/node-exporter-n7tlb                    1/1     Running   0          93s
+pod/prometheus-example-prometheus-0        2/2     Running   0          20m
+pod/prometheus-example-prometheus-1        2/2     Running   0          20m
 
-NAME                          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-service/grafana-a-service     ClusterIP   10.103.109.92   <none>        3000/TCP   3m26s
-service/prometheus-operated   ClusterIP   None            <none>        9090/TCP   22m
+NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/grafana-a-service     ClusterIP   10.107.212.241   <none>        3000/TCP   17m
+service/prometheus-operated   ClusterIP   None             <none>        9090/TCP   20m
 
 NAME                                             READY   AGE
-statefulset.apps/prometheus-example-prometheus   2/2     22m
+statefulset.apps/prometheus-example-prometheus   2/2     20m
+```
+
+Create Node Exporter daemonset
+
+```shell
+$ kubectl apply -f node-exporter-daemonset.yaml
+daemonset.apps/node-exporter created
+```
+
+Create Node Exporter svc
+
+```shell
+$ kubectl apply -f node-exporter-svc.yaml
+service/node-exporter created
+```
+
+Create ServiceMonitor
+
+```shell
+$ kubectl apply -f servicemonitor-instance.yaml
+servicemonitor.monitoring.coreos.com/node-exporter created
+```
+
+Verify Prometheus
+
+```shell
+$ kubectl port-forward -n monitoring svc/prometheus-operated 9091:9090
+Forwarding from 127.0.0.1:9091 -> 9090
+Forwarding from [::1]:9091 -> 9090
 ```
 
 ```shell
-$ kubectl get pod,svc,sts -n monitoring
-NAME                                                              READY   STATUS    RESTARTS   AGE
-pod/alertmanager-prometheus-kube-prometheus-alertmanager-0        2/2     Running   0          8m10s
-pod/prometheus-kube-prometheus-blackbox-exporter-984564d5-z264l   1/1     Running   0          9m8s
-pod/prometheus-kube-prometheus-operator-6ccb785575-xbkdp          1/1     Running   0          9m8s
-pod/prometheus-kube-state-metrics-9d66f5498-dftlx                 1/1     Running   0          9m8s
-pod/prometheus-node-exporter-vcfsz                                1/1     Running   0          9m8s
-pod/prometheus-prometheus-kube-prometheus-prometheus-0            2/2     Running   0          8m10s
-
-NAME                                                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-service/alertmanager-operated                          ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   8m10s
-service/prometheus-kube-prometheus-alertmanager        ClusterIP   10.106.0.252     <none>        9093/TCP                     9m8s
-service/prometheus-kube-prometheus-blackbox-exporter   ClusterIP   10.97.130.28     <none>        19115/TCP                    9m8s
-service/prometheus-kube-prometheus-operator            ClusterIP   10.99.39.207     <none>        8080/TCP                     9m8s
-service/prometheus-kube-prometheus-prometheus          ClusterIP   10.96.218.94     <none>        9090/TCP                     9m8s
-service/prometheus-kube-state-metrics                  ClusterIP   10.106.101.139   <none>        8080/TCP                     9m8s
-service/prometheus-node-exporter                       ClusterIP   10.104.57.79     <none>        9100/TCP                     9m8s
-service/prometheus-operated                            ClusterIP   None             <none>        9090/TCP                     8m10s
-
-NAME                                                                    READY   AGE
-statefulset.apps/alertmanager-prometheus-kube-prometheus-alertmanager   1/1     8m10s
-statefulset.apps/prometheus-prometheus-kube-prometheus-prometheus       1/1     8m10s
-```
-
-Install Grafana
-
-```shell
-$ helm install grafana bitnami/grafana-operator -n monitoring --values grafana-values.yaml
-NAME: grafana
-LAST DEPLOYED: Thu Jun  6 15:15:11 2024
-NAMESPACE: monitoring
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-CHART NAME: grafana-operator
-CHART VERSION: 4.4.3
-APP VERSION: 5.9.2
-
-** Please be patient while the chart is being deployed **
-
-Watch the Grafana Operator Deployment status using the command:
-
-    kubectl get deploy -w --namespace monitoring -l app.kubernetes.io/name=grafana-operator,app.kubernetes.io/instance=grafana
-
-
-WARNING: There are "resources" sections in the chart not set. Using "resourcesPreset" is not recommended for production. For production installations, please set the following values according to your workload needs:
-  - grafana.resources
-  - operator.resources
-+info https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-```
-
-```shell
-$ kubectl get po -n monitoring |grep grafana
-grafana-grafana-operator-787b5cfcf-p9sf9                       0/1     Running   1 (8s ago)   2m24s
-grafana-grafana-operator-grafana-deployment-6fd9bd9485-9xt4n   1/1     Running   0            2m8s
-```
-
-CRD
-
-```shell
-$ kubectl get crd
-NAME                                             CREATED AT
-alertmanagerconfigs.monitoring.coreos.com        2024-06-06T06:45:27Z
-alertmanagers.monitoring.coreos.com              2024-06-06T06:45:27Z
-grafanaalertrulegroups.grafana.integreatly.org   2024-06-06T07:15:09Z
-grafanadashboards.grafana.integreatly.org        2024-06-06T07:15:09Z
-grafanadatasources.grafana.integreatly.org       2024-06-06T07:15:09Z
-grafanafolders.grafana.integreatly.org           2024-06-06T07:15:09Z
-grafanas.grafana.integreatly.org                 2024-06-06T07:15:09Z
-podmonitors.monitoring.coreos.com                2024-06-06T06:45:27Z
-probes.monitoring.coreos.com                     2024-06-06T06:45:27Z
-prometheusagents.monitoring.coreos.com           2024-06-06T06:45:28Z
-prometheuses.monitoring.coreos.com               2024-06-06T06:45:28Z
-prometheusrules.monitoring.coreos.com            2024-06-06T06:45:28Z
-scrapeconfigs.monitoring.coreos.com              2024-06-06T06:45:28Z
-servicemonitors.monitoring.coreos.com            2024-06-06T06:45:28Z
-thanosrulers.monitoring.coreos.com               2024-06-06T06:45:28Z
-```
-
-Get services
-
-```shell
-$ kubectl get svc -n monitoring
-NAME                                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-alertmanager-operated                          ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   73m
-grafana-grafana-operator-grafana-service       NodePort    10.100.76.214    <none>        3000:30298/TCP               30m
-prometheus-kube-prometheus-alertmanager        ClusterIP   10.106.0.252     <none>        9093/TCP                     74m
-prometheus-kube-prometheus-blackbox-exporter   ClusterIP   10.97.130.28     <none>        19115/TCP                    74m
-prometheus-kube-prometheus-operator            ClusterIP   10.99.39.207     <none>        8080/TCP                     74m
-prometheus-kube-prometheus-prometheus          ClusterIP   10.96.218.94     <none>        9090/TCP                     74m
-prometheus-kube-state-metrics                  ClusterIP   10.106.101.139   <none>        8080/TCP                     74m
-prometheus-node-exporter                       ClusterIP   10.104.57.79     <none>        9100/TCP                     74m
-prometheus-operated                            ClusterIP   None             <none>        9090/TCP                     73m
-```
-
-```shell
-$ minikube service --url grafana-grafana-operator-grafana-service -n monitoring
-http://192.168.59.153:30298
-```
-
-Get Grafana login password
-
-```shell
-$ kubectl get secrets grafana-grafana-operator-grafana-admin-credentials -n monitoring -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode
-ZQrnOovzxq0ckw==
-```
-
-
-```shell
-$ curl -L https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.28.0/install.sh -o install.sh
-$ chmod +x install.sh
-$ ./install.sh v0.28.0
-
-
-$ kubectl get csv -A
-NAMESPACE   NAME            DISPLAY          VERSION   REPLACES   PHASE
-olm         packageserver   Package Server   0.28.0               Succeeded
-
-$ kubectl get packagemanifest -n olm
-NAME                                       CATALOG               AGE
-lightbend-console-operator                 Community Operators   2m28s
-ack-dynamodb-controller                    Community Operators   2m28s
-ack-memorydb-controller                    Community Operators   2m28s
-...
-```
-
-```
-$ kubectl patch svc prometheus-k8s -n monitoring --type merge -p '{"spec":{"type": "NodePort"}}'
-service/prometheus-k8s patched
+$ kubectl port-forward -n monitoring service/grafana-a-service 3000:3000
+Forwarding from 127.0.0.1:3000 -> 3000
+Forwarding from [::1]:3000 -> 3000
 ```
