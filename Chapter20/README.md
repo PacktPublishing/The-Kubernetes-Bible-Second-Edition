@@ -1,5 +1,17 @@
 # Autoscaling Kubernetes Pods and Nodes
 
+- [Autoscaling Kubernetes Pods and Nodes](#autoscaling-kubernetes-pods-and-nodes)
+  - [VerticalPodAutoscaler (VPA)](#verticalpodautoscaler-vpa)
+  - [HPA](#hpa)
+    - [Auto scale](#auto-scale)
+  - [Cluster Autoscaling](#cluster-autoscaling)
+    - [GKE](#gke)
+    - [AKS](#aks)
+    - [Implement CA](#implement-ca)
+  - [Appendix](#appendix)
+    - [Building `elastic-hammer` image](#building-elastic-hammer-image)
+
+
 ```shell
 $ kubectl describe node minikube-m03
 Name:               minikube-m03
@@ -353,7 +365,6 @@ namespace "hpa-demo" deleted
 
 ### GKE
 
-
 Preparations
 
 ```shell
@@ -463,4 +474,16 @@ $ kubectl get nodes
 NAME                                     STATUS   ROLES    AGE    VERSION
 gke-k8sdemo-default-pool-1bf4f185-6422   Ready    <none>   145m   v1.29.7-gke.1008000
 gke-k8sdemo-default-pool-1bf4f185-csv0   Ready    <none>   145m   v1.29.7-gke.1008000
+```
+
+
+## Appendix
+
+### Building `elastic-hammer` image
+
+```shell
+podman build -t elastic-hamster:1.0 .
+podman tag localhost/elastic-hamster:1.0 quay.io/iamgini/elastic-hamster:1.0
+podman login -u="k8s2edemo" -p="Token/Password" quay.io
+podman push quay.io/iamgini/elastic-hamster:1.0
 ```

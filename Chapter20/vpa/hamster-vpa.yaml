@@ -10,7 +10,7 @@ spec:
     kind: Deployment
     name: hamster
   updatePolicy:
-    updateMode: Auto
+    updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
       - containerName: '*'
