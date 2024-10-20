@@ -372,8 +372,6 @@ $ gcloud config set compute/region us-central1-a
 ```
 
 ```shell
-$ gcloud container clusters create k8sforbeginners --num-nodes=2 --zone=us-central1-a --enable-autoscaling --min-nodes=2 --max-nodes=10
-
 $ gcloud container clusters create k8sbible \
   --enable-autoscaling \
   --num-nodes 2 \
