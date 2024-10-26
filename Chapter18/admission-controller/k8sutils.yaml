@@ -1,0 +1,15 @@
+# k8sutils.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k8sutils
+  namespace: default
+spec:
+  containers:
+    - name: k8sutils
+      image: quay.io/iamgini/k8sutils:debian12
+      command:
+        - sleep
+        - "infinity"
+      # imagePullPolicy: IfNotPresent
+  restartPolicy: Always

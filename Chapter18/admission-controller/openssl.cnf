@@ -1,0 +1,22 @@
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = v3_req
+prompt             = no
+
+[ req_distinguished_name ]
+C  = SG
+ST = Singapore
+L  = Singapore
+O  = My Organization
+OU = IT Department
+CN = admission-controller-svc.admission-controllers.svc
+
+[ v3_req ]
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = admission-controller-svc
+DNS.2 = admission-controller-svc.admission-controllers.svc
