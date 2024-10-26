@@ -274,6 +274,14 @@ $ cat admission-controller.crt | base64 -w 0
 $ cat admission-controller.key | base64 -w 0
 ```
 
+
+```shell
+# kubectl create secret tls admission-controller-secret \
+#   --cert=admission-controller.crt \
+#   --key=admission-controller.key \
+#   --namespace admission-controllers
+```
+
 ```shell
 $ kubectl apply -f pod-with-security-context.yaml
 pod/security-context-demo created

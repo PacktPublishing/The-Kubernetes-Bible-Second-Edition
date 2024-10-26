@@ -38,4 +38,4 @@ def admission_controller():
     return jsonify(admission_response), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=443, ssl_context=('admission-controller.crt', 'admission-controller.key'))  # Ensure you have SSL certificates
+    app.run(host='0.0.0.0', port=443, ssl_context=('/app/certs/tls.crt', '/app/certs/tls.key'))  # Ensure you have SSL certificates
