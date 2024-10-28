@@ -31,6 +31,8 @@ $ kubectl create token example-sa -n example-ns
 eyJhbGciOiJSUzI1NiIsImtpZCI6IlcyczVtMEFVQ3hVaC1fNnlrLWVqcVlaUnVUQzBkeUdLY1cwTU5DM3JtbzAifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzE4NDQ1NDc5LCJpYXQiOjE3MTg0NDE4NzksImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwianRpIjoiNDVkYzg2MWMtMTAyNC00ODU3LWE2OTQtMDBhNWQyZWViYTVmIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJleGFtcGxlLW5zIiwic2VydmljZWFjY291bnQiOnsibmFtZSI6ImV4YW1wbGUtc2EiLCJ1aWQiOiJlYmM1NTU0Yi0zMDZmLTQ4ZmUtYjlkNy0zZTU3NzdmYWJmMDYifX0sIm5iZiI6MTcxODQ0MTg3OSwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmV4YW1wbGUtbnM6ZXhhbXBsZS1zYSJ9.biCcURfFWre3YLg3jMzlYWAS9LkCb0CXODELxbN0WeHrcK338P3D1CqlA9fJudlzXxeujRBc-AkQTBJDyOae1xCXOefTXyLyHBEnkM5-RnVX6zkkIG9CcE1Vj1FqT48o_sKKuFFlpuWpJID9jTM5jJHyUsjLqA4lGYMHS6Xbgwoy96qRZhRAsYxC7H1w1xsynBKs89kQ9ZSJ54zpWDuqhz-7pPpKxj4TbFMFuOY0Gvi8mrYB6CUJ861ZN99q1IVDAptYwYw-bHdrwudO8S8z5V8vCqSjPXQEjsNeEV7cMvWD4bgDg1NQiHizOSR6aoXvjGkGmLLr8G422yT-Tp-qWw
 ```
 
+Configure kubeconfig
+
 ```shell
 $ kubectl config set-credentials example-sa --token=<your-token>
 User "example-sa" set.
@@ -84,6 +86,25 @@ spec:
 
 ```shell
 $ kubectl config view -o json | jq '.users[] | select(.name == "minikube")'
+{
+  "name": "minikube",
+  "user": {
+    "client-certificate": "/home/iamgini/.minikube/profiles/minikube/client.crt",
+    "client-key": "/home/iamgini/.minikube/profiles/minikube/client.key"
+  }
+}
+```
+
+or
+
+```shell
+$ kubectl config view -o json | jq '.users[]'
+{
+  "name": "example-sa",
+  "user": {
+    "token": "REDACTED"
+  }
+}
 {
   "name": "minikube",
   "user": {
@@ -229,6 +250,36 @@ rolebinding.rbac.authorization.k8s.io "read-pods" deleted
 ```shell
 $ minikube ssh 'sudo grep -- '--enable-admission-plugins' /etc/kubernetes/manifests/kube-apiserver.yaml'
     - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota
+```
+
+### Create SSL for admissiton controllers
+
+```shell
+# Create a Private Key for the CA:
+$ openssl genrsa -out ca.key 2048
+
+# Create a Self-Signed Certificate for the CA:
+$ openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=my-admission-ca"
+
+# Create a Private Key and CSR for the Admission Controller:
+$ openssl req -new -newkey rsa:2048 -nodes -keyout admission-controller.key -out admission-controller.csr -config openssl.cnf
+
+# Sign the Admission Controller CSR with the CA:
+$ openssl x509 -req -in admission-controller.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out admission-controller.crt -days 365 -sha256
+
+# For the certificate
+$ cat admission-controller.crt | base64 -w 0
+
+# For the key
+$ cat admission-controller.key | base64 -w 0
+```
+
+
+```shell
+# kubectl create secret tls admission-controller-secret \
+#   --cert=admission-controller.crt \
+#   --key=admission-controller.key \
+#   --namespace admission-controllers
 ```
 
 ```shell
