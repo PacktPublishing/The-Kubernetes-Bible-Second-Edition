@@ -1,5 +1,14 @@
 # Installing Your First Kubernetes Cluster
 
+- [Installing Your First Kubernetes Cluster](#installing-your-first-kubernetes-cluster)
+  - [Installing minikube](#installing-minikube)
+  - [minikube configurations](#minikube-configurations)
+  - [Deploying Kubernetes using minikube](#deploying-kubernetes-using-minikube)
+  - [Stop/Pause/Delete minikube clusters](#stoppausedelete-minikube-clusters)
+  - [Multiple Kubernetes clusters using minikube](#multiple-kubernetes-clusters-using-minikube)
+  - [Multi-node Kubernetes using minikube](#multi-node-kubernetes-using-minikube)
+  - [Creating cluster using kind](#creating-cluster-using-kind)
+
 ## Installing minikube
 
 Linux
