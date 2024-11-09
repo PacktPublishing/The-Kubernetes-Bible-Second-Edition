@@ -9,7 +9,6 @@
   - [Multi-node Kubernetes using minikube](#multi-node-kubernetes-using-minikube)
   - [Creating cluster using kind](#creating-cluster-using-kind)
 
-
 ## Installing minikube
 
 Linux
