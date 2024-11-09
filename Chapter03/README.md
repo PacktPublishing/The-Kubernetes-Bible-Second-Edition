@@ -6,6 +6,7 @@
   - [Deploying Kubernetes using minikube](#deploying-kubernetes-using-minikube)
   - [Stop/Pause/Delete minikube clusters](#stoppausedelete-minikube-clusters)
   - [Multiple Kubernetes clusters using minikube](#multiple-kubernetes-clusters-using-minikube)
+    - [minikube check profiles](#minikube-check-profiles)
   - [Multi-node Kubernetes using minikube](#multi-node-kubernetes-using-minikube)
   - [Creating cluster using kind](#creating-cluster-using-kind)
 
@@ -161,7 +162,11 @@ $ minikube delete
 $ minikube start --profile cluster-docker --driver=podman
 
 $ minikube start --profile cluster-vbox --driver=virtualbox
+```
 
+### minikube check profiles
+
+```shell
 $ minikube profile list
 |----------------|------------|------------|----------------|------|---------|---------|-------|----------------|--------------------|
 |    Profile     | VM Driver  |  Runtime   |       IP       | Port | Version | Status  | Nodes | Active Profile | Active Kubecontext |
@@ -190,11 +195,6 @@ minikube-m03   Ready    <none>          44s   v1.28.3
 ```
 
 ## Creating cluster using kind
-
-
-```shell
-
-```
 
 ```shell
 $ kind create cluster --name test-kind
