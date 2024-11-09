@@ -1,5 +1,16 @@
 # Advanced Kubernetes: From Traffic Management to Multi-Cluster Strategies and Emerging Technologies
 
+- [Advanced Kubernetes: From Traffic Management to Multi-Cluster Strategies and Emerging Technologies](#advanced-kubernetes-from-traffic-management-to-multi-cluster-strategies-and-emerging-technologies)
+  - [Ingress](#ingress)
+  - [Deploying Ingress](#deploying-ingress)
+  - [AGIC](#agic)
+  - [IngressClass](#ingressclass)
+  - [etcd](#etcd)
+  - [Troubleshooting](#troubleshooting)
+  - [Logs and Events](#logs-and-events)
+  - [kubectl exec](#kubectl-exec)
+
+
 ## Ingress
 
 ```shell

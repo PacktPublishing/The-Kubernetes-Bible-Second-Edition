@@ -1,5 +1,40 @@
 # Installing Your First Kubernetes Cluster
 
+## Installing minikube
+
+Linux
+
+```shell
+$ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+$ sudo install minikube-linux-amd64 /usr/local/bin/minikube
+# Verify minikube command and path
+$ which minikube
+/usr/local/bin/minikube
+```
+
+macOS
+
+```shell
+$ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-
+darwin-amd64
+$ sudo install minikube-darwin-amd64 /usr/local/bin/minikube
+# Verify minikube command and path
+$ which minikube
+```
+
+Windows
+
+```shell
+# Using Windows Package Manager (if installed)
+$ winget install minikube
+# Using Chocolatey
+$ choco install minikube
+# Via .exe download and setting the PATH
+# 1. Download minikube: https://storage.googleapis.com/minikube/releases/
+latest/minikube-installer.exe
+# 2. Set PATH
+```
+
 ## minikube configurations
 
 ```shell
@@ -9,10 +44,10 @@ $ minikube config set cpus 4
 $ minikube config set memory 16000
 ❗  These changes will take effect upon a minikube delete and then a minikube start
 
-$  minikube config set driver podman
+$ minikube config set driver podman
 ❗  These changes will take effect upon a minikube delete and then a minikube start
 
-$  minikube config view driver
+$ minikube config view driver
 - driver: podman
 - rootless: false
 ```
@@ -29,6 +64,29 @@ If you are using an old version of minikube but you want to install different ve
 
 ```shell
 $ minikube start --driver=virtualbox --memory=8000m --cpus=2 --kubernetes-version=1.29.0
+```
+
+Selecting correct driver:
+
+```shell
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                   │
+│    You have selected "virtualbox" driver, but there are better options !                          │
+│    For better performance and support consider using a different driver:                          │
+│            - kvm2                                                                                 │
+│            - qemu2                                                                                │
+│                                                                                                   │
+│    To turn off this warning run:                                                                  │
+│                                                                                                   │
+│            $ minikube config set WantVirtualBoxDriverWarning false                                │
+│                                                                                                   │
+│                                                                                                   │
+│    To learn more about on minikube drivers checkout https://minikube.sigs.k8s.io/docs/drivers/    │
+│    To see benchmarks checkout https://minikube.sigs.k8s.io/docs/benchmarks/cpuusage/              │
+│                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
+🔎  Verifying Kubernetes components...
 ```
 
 ```shell
