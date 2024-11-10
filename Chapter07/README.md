@@ -30,7 +30,7 @@ $ kubectl get cm
 NAME                 DATA   AGE
 my-first-configmap   0      42s
 
-  kubectl create -f my-second-configmap.yaml
+$ kubectl apply -f my-second-configmap.yaml
 configmap/my-second-configmap created
 
 $  kubectl get cm
@@ -167,7 +167,7 @@ http://192.168.49.2:31997
 ```
 
 ```shell
-$ kubectl create -f flask-pod-with-configmap-all.yaml
+$ kubectl apply -f flask-pod-with-configmap-all.yaml
 pod/flask-pod-2-with-configmap created
 
 $ kubectl exec pods/flask-pod-with-configmap-all -- env
@@ -270,7 +270,7 @@ type: Opaque
 $ echo -n 'my-db-password' | base64
 bXktZGItcGFzc3dvcmQ=
 
-$ kubectl create -f secret-from-file.yaml
+$ kubectl apply -f secret-from-file.yaml
 secret/my-second-secret created
 
 $ kubectl get secret my-second-secret -o yaml
@@ -357,7 +357,7 @@ HOME=/root
 ```
 
 ```shell
-$ kubectl create -f secret-from-file-database.yaml
+$ kubectl apply -f secret-from-file-database.yaml
 secret/appdb-secret created
 
 $ kubectl apply -f flask-pod-with-secret-all.yaml
