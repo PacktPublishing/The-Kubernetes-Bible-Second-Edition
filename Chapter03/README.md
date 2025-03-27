@@ -8,6 +8,7 @@
   - [Multiple Kubernetes clusters using minikube](#multiple-kubernetes-clusters-using-minikube)
     - [minikube check profiles](#minikube-check-profiles)
   - [Multi-node Kubernetes using minikube](#multi-node-kubernetes-using-minikube)
+  - [Installing Kind](#installing-kind)
   - [Creating cluster using kind](#creating-cluster-using-kind)
 
 ## Installing minikube
@@ -192,6 +193,29 @@ NAME           STATUS   ROLES           AGE   VERSION
 minikube       Ready    control-plane   77s   v1.28.3
 minikube-m02   Ready    <none>          58s   v1.28.3
 minikube-m03   Ready    <none>          44s   v1.28.3
+```
+
+## Installing Kind
+
+```shell
+## Linux:
+$ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.1/kind-$(uname)-amd64
+$ chmod +x ./kind
+$ mv ./kind /usr/local/bin/kind
+
+# macOS:
+$ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.1/kind-$(uname)-amd64
+$ chmod +x ./kind
+$ mv ./kind /usr/local/bin/kind
+
+# Homebrew:
+$ brew install kind
+
+# Windows:
+$ curl.exe -Llo kind-windows-amd64.exe https
+
+# Chocolatey:
+$ choco install kind
 ```
 
 ## Creating cluster using kind
