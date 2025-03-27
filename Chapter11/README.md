@@ -98,7 +98,7 @@ working. Further configuration is required.</p>
 ## Expose the Deployment
 
 ```shell
-$ kubectl expose deployment --type=LoadBalancer nginx-deployment-example
+$ kubectl expose deployment nginx-deployment-example --type=LoadBalancer
 service/nginx-deployment-example exposed
 ```
 
